@@ -2,26 +2,37 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 interface NumberLineProps {
-  digits: number;
+  divisions: number;
+  index: number;
   leftLabel: string;
   rightLabel: string;
+  setAttribute: (index: number, value: number) => void;
 }
 
-const NumberLine: React.FC<NumberLineProps> = ({ digits, leftLabel, rightLabel }) => {
+const NumberLine: React.FC<NumberLineProps> = ({
+  divisions,
+  index,
+  leftLabel,
+  rightLabel,
+  setAttribute,
+}) => {
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(0);
   const [direction, setDirection] = useState<"right" | "left">("right");
   const numberLineRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  const markers = Array.from({ length: digits }, (_, i) => i);
+  const markers = Array.from({ length: divisions }, (_, i) => i);
 
   const handleMouseMove = (e: MouseEvent) => {
+    setHasInteracted(true);
+
     if (numberLineRef.current) {
-      const rect = numberLineRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const markerWidth = rect.width / (digits - 1);
-      const closestMarker = Math.round(x / markerWidth);
-      setSliderPosition(Math.max(0, Math.min(digits - 1, closestMarker)));
+      const rect: DOMRect = numberLineRef.current.getBoundingClientRect();
+      const x: number = e.clientX - rect.left;
+      const markerWidth: number = rect.width / (divisions - 1);
+      const closestMarker: number = Math.round(x / markerWidth);
+      setSliderPosition(Math.max(0, Math.min(divisions - 1, closestMarker)));
     }
   };
 
@@ -36,9 +47,11 @@ const NumberLine: React.FC<NumberLineProps> = ({ digits, leftLabel, rightLabel }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    setHasInteracted(true);
+
     if (e.key === "Enter") {
       if (direction === "right") {
-        if (sliderPosition < digits - 1) {
+        if (sliderPosition < divisions - 1) {
           setSliderPosition(sliderPosition + 1);
         } else {
           setDirection("left");
@@ -53,7 +66,7 @@ const NumberLine: React.FC<NumberLineProps> = ({ digits, leftLabel, rightLabel }
         }
       }
     } else if (e.key === "ArrowRight") {
-      if (sliderPosition < digits - 1) {
+      if (sliderPosition < divisions - 1) {
         setSliderPosition(sliderPosition + 1);
       }
     } else if (e.key === "ArrowLeft") {
@@ -70,6 +83,13 @@ const NumberLine: React.FC<NumberLineProps> = ({ digits, leftLabel, rightLabel }
     };
   }, []);
 
+  useEffect(() => {
+    if (hasInteracted) {
+      // Update shared attribute list only when slider is moved to new position.
+      setAttribute(index, sliderPosition);
+    }
+  }, [sliderPosition, hasInteracted]);
+
   return (
     <StyledNumberLineWrapper>
       <div className="number-line-container">
@@ -80,7 +100,7 @@ const NumberLine: React.FC<NumberLineProps> = ({ digits, leftLabel, rightLabel }
           ))}
           <div
             className="slider"
-            style={{ left: `${(sliderPosition / (digits - 1)) * 100}%` }}
+            style={{ left: `${(sliderPosition / (divisions - 1)) * 100}%` }}
             onMouseDown={handleMouseDown}
             tabIndex={0}
             onKeyDown={handleKeyDown}
