@@ -11,7 +11,7 @@ const Heading: React.FC<HeaderProps> = ({ title }) => {
 
 const Header = styled.h2`
   text-align: left;
-  font-size: 1.5rem;
+  font-size: 36px;
   margin: 0px;
   color: black;
 `;

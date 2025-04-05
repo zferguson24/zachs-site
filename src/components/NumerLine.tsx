@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 interface NumberLineProps {
-  divisions: number;
+  ticks: number;
   index: number;
   leftLabel: string;
   rightLabel: string;
@@ -10,7 +10,7 @@ interface NumberLineProps {
 }
 
 const NumberLine: React.FC<NumberLineProps> = ({
-  divisions,
+  ticks,
   index,
   leftLabel,
   rightLabel,
@@ -22,7 +22,7 @@ const NumberLine: React.FC<NumberLineProps> = ({
   const numberLineRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  const markers = Array.from({ length: divisions }, (_, i) => i);
+  const markers = Array.from({ length: ticks }, (_, i) => i);
 
   const handleMouseMove = (e: MouseEvent) => {
     setHasInteracted(true);
@@ -30,9 +30,9 @@ const NumberLine: React.FC<NumberLineProps> = ({
     if (numberLineRef.current) {
       const rect: DOMRect = numberLineRef.current.getBoundingClientRect();
       const x: number = e.clientX - rect.left;
-      const markerWidth: number = rect.width / (divisions - 1);
+      const markerWidth: number = rect.width / (ticks - 1);
       const closestMarker: number = Math.round(x / markerWidth);
-      setSliderPosition(Math.max(0, Math.min(divisions - 1, closestMarker)));
+      setSliderPosition(Math.max(0, Math.min(ticks - 1, closestMarker)));
     }
   };
 
@@ -51,7 +51,7 @@ const NumberLine: React.FC<NumberLineProps> = ({
 
     if (e.key === "Enter") {
       if (direction === "right") {
-        if (sliderPosition < divisions - 1) {
+        if (sliderPosition < ticks - 1) {
           setSliderPosition(sliderPosition + 1);
         } else {
           setDirection("left");
@@ -66,7 +66,7 @@ const NumberLine: React.FC<NumberLineProps> = ({
         }
       }
     } else if (e.key === "ArrowRight") {
-      if (sliderPosition < divisions - 1) {
+      if (sliderPosition < ticks - 1) {
         setSliderPosition(sliderPosition + 1);
       }
     } else if (e.key === "ArrowLeft") {
@@ -100,7 +100,7 @@ const NumberLine: React.FC<NumberLineProps> = ({
           ))}
           <div
             className="slider"
-            style={{ left: `${(sliderPosition / (divisions - 1)) * 100}%` }}
+            style={{ left: `${(sliderPosition / (ticks - 1)) * 100}%` }}
             onMouseDown={handleMouseDown}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -110,8 +110,8 @@ const NumberLine: React.FC<NumberLineProps> = ({
         <div className="arrow right-arrow"></div>
       </div>
       <div className="line-label">
-        <div>{leftLabel}</div>
-        <div>{rightLabel}</div>
+        <p>{leftLabel}</p>
+        <p>{rightLabel}</p>
       </div>
     </StyledNumberLineWrapper>
   );
@@ -119,7 +119,8 @@ const NumberLine: React.FC<NumberLineProps> = ({
 
 const StyledNumberLineWrapper = styled.div`
   .number-line-container {
-    padding-top: 64px;
+    padding-top: 50px;
+    padding-bottom: 25px;
     display: flex;
     align-items: center;
     width: 100%;
@@ -162,8 +163,8 @@ const StyledNumberLineWrapper = styled.div`
   }
 
   .slider {
-    width: 11px;
-    height: 22px;
+    width: 12px;
+    height: 24px;
     background-color: gray;
     border-radius: 10px;
     position: absolute;
@@ -175,15 +176,18 @@ const StyledNumberLineWrapper = styled.div`
   }
 
   .slider:focus {
-    box-shadow: 0 0 0 3px rgba(125, 225, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(44, 170, 250, 0.5);
   }
 
   .line-label {
     display: flex;
     justify-content: space-between;
-    padding-top: 8px;
     color: black;
+    font-size: 18px;
     user-select: none;
+    p {
+      margin: 0px;
+    }
   }
 `;
 
