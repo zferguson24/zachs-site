@@ -9,29 +9,34 @@ type CardProps = {
 const Card: React.FC<CardProps> = ({ children }) => {
   return (
     <CardContainer>
-      <motion.div
-        initial={{ x: "100vw", opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{
-          x: { duration: 1.5, ease: "easeOut" },
-          opacity: { delay: 0.5, duration: 0.5, ease: "easeIn" },
+      <MotionCard
+        initial={{ opacity: 0}}
+        whileInView={{
+          x: ["100vw", "0vw"],
+          opacity: [0, 1],
         }}
-        className="inner-card"
+        transition={{
+          x: { duration: 1.5, ease: "easeInOut" },
+          opacity: { duration: 1.5, ease: "easeInOut" },
+        }}
+        viewport={{ once: true, amount: 0.2 }}
       >
         {children}
-      </motion.div>
+      </MotionCard>
     </CardContainer>
   );
 };
 
 const CardContainer = styled.div`
-  .inner-card {
-    background-color: #f0f0f0;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin: 16px;
-  }
+  overflow-x: hidden;
+`;
+
+const MotionCard = styled(motion.div)`
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px;
 `;
 
 export default Card;
