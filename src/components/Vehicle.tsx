@@ -2,10 +2,6 @@ import React from "react";
 import { VehicleProps } from "../types/VehicleTypes";
 import styled from "styled-components";
 
-type CustomProps = {
-  mobilebreakpoint: string;
-};
-
 const Vehicle: React.FC<VehicleProps> = ({
   make,
   model,
@@ -19,7 +15,7 @@ const Vehicle: React.FC<VehicleProps> = ({
   imageSrc,
 }) => {
   return (
-    <VehicleWrapper mobilebreakpoint="992px">
+    <VehicleWrapper>
       <div className="vehicle-container">
         <div className="image-container">
           <img className="vehicle-image" src={imageSrc} alt={`${make} ${model}`} />
@@ -60,13 +56,13 @@ const Vehicle: React.FC<VehicleProps> = ({
   );
 };
 
-const VehicleWrapper = styled.div<CustomProps>`
+const VehicleWrapper = styled.div`
   .vehicle-container {
     display: flex;
     align-items: center;
     gap: 16px;
 
-    @media (max-width: ${(props) => props.mobilebreakpoint}) {
+    @media (max-width: 992px) {
       flex-direction: column;
       align-items: center;
     }
@@ -77,14 +73,16 @@ const VehicleWrapper = styled.div<CustomProps>`
   }
 
   .vehicle-image {
-    width: 500px;
-    height: 500px;
+    width: 450px;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
+    margin: 16px;
 
-    @media (max-width: ${(props) => props.mobilebreakpoint}) {
+    @media (max-width: 992px) {
       width: 100%;
-      height: auto;
+      height: 300px;
+      margin: 0px;
     }
   }
 

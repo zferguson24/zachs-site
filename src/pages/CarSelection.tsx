@@ -33,11 +33,11 @@ const CarSelection: React.FC = () => {
           />
         ))}
       </Card>
-      <Card>
-        {vehicles.map((vehicle, index) => (
-          <Vehicle key={index} {...vehicle} />
-        ))}
-      </Card>
+      {vehicles.map((vehicle) => (
+        <Card key={vehicle.model}>
+          <Vehicle {...vehicle} />
+        </Card>
+      ))}
     </>
   );
 };

@@ -9,10 +9,11 @@ export type VehicleProps = {
     | (Engine & Transmission)
     | (HybridSystem & Transmission)
     | ElectricSystem;
-  bodyStyle: "Sedan" | "Hatchback" | "Coupe" | "Convertible" | "SUV" | "Truck";
+  bodyStyle: "Sedan" | "Hatchback" | "Coupe" | "Convertible" | "SUV" | "Truck" | "Wagon";
   sizeClass: "Subcompact" | "Compact" | "Midsize" | "Full Size";
   driveType: DriveType;
   imageSrc: string;
+  selectionArray: number[];
 };
 
 export enum DriveType {

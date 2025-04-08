@@ -6,6 +6,7 @@ export const CONSTANTS = {
       power: ["Economical", "Fun"],
       size: ["Small", "Large"],
       handling: ["Relaxed", "Lively"],
+      styling: ["Bland", "Quirky"],
     },
   },
 };
