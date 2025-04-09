@@ -19,6 +19,10 @@ const StyledButton = styled.button`
   &:hover {
     background-color: #45a049;
   }
+
+  @media (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const Button: React.FC<ButtonProps> = ({ onClick, label }) => {

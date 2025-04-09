@@ -4,16 +4,17 @@ import { motion } from "framer-motion";
 
 type CardProps = {
   children: React.ReactNode;
+  disableInitialScroll?: boolean;
 };
 
-const Card: React.FC<CardProps> = ({ children }) => {
+const Card: React.FC<CardProps> = ({ children, disableInitialScroll }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (cardRef.current) {
+    if (cardRef.current && !!!disableInitialScroll) {
       cardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, []);
+  }, [disableInitialScroll]);
 
   return (
     <CardContainer>

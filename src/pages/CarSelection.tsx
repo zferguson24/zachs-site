@@ -9,7 +9,7 @@ import Button from "../components/Button";
 import { VehicleProps } from "../types/VehicleTypes";
 
 const CarSelection: React.FC = () => {
-  const [chosenVehicle, setChosenVehicle] = useState<VehicleProps>();
+  const [chosenVehicle, setChosenVehicle] = useState<VehicleProps | null>(null);
 
   const {
     updateAttributeAtIndex,
@@ -19,6 +19,16 @@ const CarSelection: React.FC = () => {
   const { sliderHeading, sliderLabels } = CONSTANTS.carSelection;
   const sliders = Object.entries(sliderLabels);
 
+  const handleAttributeUpdate = (index: number, value: number): void => {
+    // Reset chosen vehicle when sliders are interacted with again.
+    if (!!chosenVehicle) {
+      setChosenVehicle(null);
+    }
+
+    updateAttributeAtIndex(index, value);
+  };
+
+  // Render the vehicle from the result of the selection algorithm.
   const updateChosenVehicle = (): void => {
     setChosenVehicle(findClosestVehicleByAttributeArray());
   };
@@ -36,10 +46,10 @@ const CarSelection: React.FC = () => {
           <NumberLine
             key={key}
             index={index}
-            ticks={6}
+            ticks={10}
             leftLabel={left}
             rightLabel={right}
-            setAttribute={updateAttributeAtIndex}
+            setAttribute={handleAttributeUpdate}
           />
         ))}
         <Button onClick={updateChosenVehicle} label="Submit"></Button>

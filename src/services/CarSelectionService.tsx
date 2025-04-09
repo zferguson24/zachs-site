@@ -27,7 +27,6 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
       const sanitizedArray = newArray.map((val) =>
         val === undefined ? 0 : val
       );
-      console.log("Updated selection array: ", sanitizedArray);
       return sanitizedArray;
     });
   };
@@ -56,8 +55,23 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
       vehicles[minDifferenceIndex].intrinsicAttributeArray
     );
 
+    console.log(
+      `Difference for vehicle ${vehicles[minDifferenceIndex].make} ${vehicles[minDifferenceIndex].model}: `,
+      minDifference
+    );
+
     for (let i = 1; i < vehicles.length; i++) {
       const difference = totalDifference(vehicles[i].intrinsicAttributeArray);
+
+      console.log(
+        `Difference for vehicle ${vehicles[i].make} ${vehicles[i].model}: `,
+        difference
+      );
+
+      if (difference === 0) {
+        minDifference = difference;
+        break;
+      }
 
       if (difference < minDifference) {
         minDifference = difference;
