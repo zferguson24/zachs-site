@@ -13,7 +13,7 @@ export type VehicleProps = {
   sizeClass: "Subcompact" | "Compact" | "Midsize" | "Full Size";
   driveType: DriveType;
   imageSrc: string;
-  selectionArray: number[];
+  intrinsicAttributeArray: number[];
 };
 
 export enum DriveType {

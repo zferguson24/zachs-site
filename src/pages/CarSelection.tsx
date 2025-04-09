@@ -1,17 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import Heading from "../components/Heading";
 import NumberLine from "../components/NumerLine";
 import { CONSTANTS } from "../assets/AppConstants";
 import { useCarSelectionService } from "../services/CarSelectionService";
 import Vehicle from "../components/Vehicle";
-import { vehicles } from "../assets/VehicleConstants";
+import Button from "../components/Button";
+import { VehicleProps } from "../types/VehicleTypes";
 
 const CarSelection: React.FC = () => {
-  const { updateAttributeAtIndex, setAttributeArray } =
-    useCarSelectionService();
+  const [chosenVehicle, setChosenVehicle] = useState<VehicleProps>();
+
+  const {
+    updateAttributeAtIndex,
+    setAttributeArray,
+    findClosestVehicleByAttributeArray,
+  } = useCarSelectionService();
   const { sliderHeading, sliderLabels } = CONSTANTS.carSelection;
   const sliders = Object.entries(sliderLabels);
+
+  const updateChosenVehicle = (): void => {
+    setChosenVehicle(findClosestVehicleByAttributeArray());
+  };
 
   useEffect(() => {
     // Initialize attribute selection array based on number of sliders from constants.
@@ -32,12 +42,13 @@ const CarSelection: React.FC = () => {
             setAttribute={updateAttributeAtIndex}
           />
         ))}
+        <Button onClick={updateChosenVehicle} label="Submit"></Button>
       </Card>
-      {vehicles.map((vehicle) => (
-        <Card key={vehicle.model}>
-          <Vehicle {...vehicle} />
+      {!!chosenVehicle ? (
+        <Card>
+          <Vehicle {...chosenVehicle} />
         </Card>
-      ))}
+      ) : null}
     </>
   );
 };

@@ -46,7 +46,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Compact",
     driveType: DriveType.fwd,
     imageSrc: civic,
-    selectionArray: [],
+    intrinsicAttributeArray: [2, 3, 1, 4, 3],
   },
   {
     make: "Toyota",
@@ -69,7 +69,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.fourByFour,
     imageSrc: tundra,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 2, 5, 2, 3],
   },
   {
     make: "Kia",
@@ -92,7 +92,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: sportage,
-    selectionArray: [],
+    intrinsicAttributeArray: [1, 2, 3, 3, 3],
   },
   {
     make: "Honda",
@@ -117,7 +117,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.fwd,
     imageSrc: accord,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 3, 4, 3],
   },
   {
     make: "Subaru",
@@ -140,7 +140,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.awd,
     imageSrc: outback,
-    selectionArray: [],
+    intrinsicAttributeArray: [1, 2, 4, 3, 3],
   },
   {
     make: "Toyota",
@@ -163,7 +163,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.awd,
     imageSrc: highlander,
-    selectionArray: [],
+    intrinsicAttributeArray: [2, 2, 4, 3, 3],
   },
   {
     make: "Subaru",
@@ -186,7 +186,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: forester,
-    selectionArray: [],
+    intrinsicAttributeArray: [1, 2, 3, 3, 3],
   },
   {
     make: "Subaru",
@@ -209,7 +209,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: crosstrek,
-    selectionArray: [],
+    intrinsicAttributeArray: [1, 2, 3, 3, 3],
   },
   {
     make: "Toyota",
@@ -232,7 +232,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.fourByFour,
     imageSrc: taco,
-    selectionArray: [],
+    intrinsicAttributeArray: [2, 3, 3, 3, 4],
   },
   {
     make: "Ford",
@@ -255,7 +255,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.awd,
     imageSrc: explorer,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 3, 3],
   },
   {
     make: "Chevy",
@@ -278,7 +278,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Subcompact",
     driveType: DriveType.fwd,
     imageSrc: trax,
-    selectionArray: [],
+    intrinsicAttributeArray: [2, 3, 3, 3, 3],
   },
   {
     make: "Hyundai",
@@ -301,7 +301,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: tucson,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 3, 4],
   },
   {
     make: "Chevrolet",
@@ -324,7 +324,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: equinox,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 3, 3],
   },
   {
     make: "Jeep",
@@ -347,7 +347,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: jgc,
-    selectionArray: [],
+    intrinsicAttributeArray: [4, 4, 4, 3, 4],
   },
   {
     make: "Toyota",
@@ -370,7 +370,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Compact",
     driveType: DriveType.fwd,
     imageSrc: corolla,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 2, 2, 3, 3],
   },
   {
     make: "Nissan",
@@ -393,7 +393,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: rogue,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 3, 3],
   },
   {
     make: "Toyota",
@@ -418,7 +418,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: camry,
-    selectionArray: [],
+    intrinsicAttributeArray: [4, 3, 4, 4, 3],
   },
   {
     make: "GMC",
@@ -441,7 +441,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.awd,
     imageSrc: sierra,
-    selectionArray: [],
+    intrinsicAttributeArray: [4, 4, 5, 3, 4],
   },
   {
     make: "Ram",
@@ -464,7 +464,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.fourByFour,
     imageSrc: ram,
-    selectionArray: [],
+    intrinsicAttributeArray: [5, 5, 5, 3, 4],
   },
   {
     make: "Honda",
@@ -487,7 +487,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: crv,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 4, 3],
   },
   {
     make: "Tesla",
@@ -509,7 +509,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: my,
-    selectionArray: [],
+    intrinsicAttributeArray: [5, 4, 4, 5, 4],
   },
   {
     make: "Toyota",
@@ -532,7 +532,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Midsize",
     driveType: DriveType.awd,
     imageSrc: rav4,
-    selectionArray: [],
+    intrinsicAttributeArray: [3, 3, 4, 3, 3],
   },
   {
     make: "Chevrolet",
@@ -555,7 +555,7 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.fourByFour,
     imageSrc: silverado,
-    selectionArray: [],
+    intrinsicAttributeArray: [4, 4, 5, 3, 4],
   },
   {
     make: "Ford",
@@ -578,6 +578,6 @@ export const vehicles: VehicleProps[] = [
     sizeClass: "Full Size",
     driveType: DriveType.fourByFour,
     imageSrc: f150,
-    selectionArray: [],
+    intrinsicAttributeArray: [4, 4, 5, 3, 4],
   },
 ];

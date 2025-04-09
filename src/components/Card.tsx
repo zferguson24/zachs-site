@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
@@ -7,16 +7,25 @@ type CardProps = {
 };
 
 const Card: React.FC<CardProps> = ({ children }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
   return (
     <CardContainer>
       <MotionCard
-        initial={{ opacity: 0}}
+        ref={cardRef}
+        initial={{ opacity: 0 }}
         whileInView={{
           x: ["100vw", "0vw"],
           opacity: [0, 1],
         }}
         transition={{
-          x: { duration: 1.5, ease: "easeInOut" },
+          x: { duration: 1, ease: "easeInOut" },
           opacity: { duration: 1.5, ease: "easeInOut" },
         }}
         viewport={{ once: true, amount: 0.2 }}

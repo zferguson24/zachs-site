@@ -18,16 +18,22 @@ const Vehicle: React.FC<VehicleProps> = ({
     <VehicleWrapper>
       <div className="vehicle-container">
         <div className="image-container">
-          <img className="vehicle-image" src={imageSrc} alt={`${make} ${model}`} />
+          <img
+            className="vehicle-image"
+            src={imageSrc}
+            alt={`${make} ${model}`}
+          />
         </div>
         <div className="text-container">
           <h2 className="vehicle-title">{`${make} ${model}`}</h2>
           <div className="vehicle-details">
             <p>
-              <strong>0-60 mph:</strong> {zeroToSixty}
+              <strong>0-60 mph: </strong>
+              {zeroToSixty}
             </p>
             <p>
-              <strong>Top Speed:</strong> {topSpeed}
+              <strong>Top Speed: </strong>
+              {topSpeed}
             </p>
             <p>
               <strong>Fuel Economy:</strong> City: {fuelEconomy.city} mpg |
@@ -81,7 +87,7 @@ const VehicleWrapper = styled.div`
 
     @media (max-width: 992px) {
       width: 100%;
-      height: 300px;
+      height: 250px;
       margin: 0px;
     }
   }
@@ -90,6 +96,10 @@ const VehicleWrapper = styled.div`
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 8px;
+
+    @media (max-width: 992px) {
+      margin-top: 0px;
+    }
   }
 
   .text-container {
