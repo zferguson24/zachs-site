@@ -206,7 +206,7 @@ export const vehicles: VehicleProps[] = [
       type: "Automatic",
     },
     bodyStyle: "SUV",
-    sizeClass: "Midsize",
+    sizeClass: "Compact",
     driveType: DriveType.awd,
     imageSrc: crosstrek,
     intrinsicAttributeArray: [0, 3, 6, 4, 4],

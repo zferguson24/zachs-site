@@ -40,7 +40,7 @@ const CarSelection: React.FC = () => {
 
   return (
     <>
-      <Card>
+      <Card disableInitialScroll={true}>
         <Heading title={sliderHeading}></Heading>
         {sliders.map(([key, [left, right]], index) => (
           <NumberLine

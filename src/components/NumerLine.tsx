@@ -76,10 +76,40 @@ const NumberLine: React.FC<NumberLineProps> = ({
     }
   };
 
+  const getSliderPositionFromX = (clientX: number) => {
+    if (numberLineRef.current) {
+      const rect = numberLineRef.current.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const markerWidth = rect.width / (ticks - 1);
+      return Math.max(0, Math.min(ticks - 1, Math.round(x / markerWidth)));
+    }
+    return sliderPosition;
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    setHasInteracted(true);
+    const touch = e.touches[0];
+    if (touch) {
+      setSliderPosition(getSliderPositionFromX(touch.clientX));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    document.removeEventListener("touchmove", handleTouchMove);
+    document.removeEventListener("touchend", handleTouchEnd);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
+  };
+
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -102,10 +132,11 @@ const NumberLine: React.FC<NumberLineProps> = ({
             className="slider"
             style={{ left: `${(sliderPosition / (ticks - 1)) * 100}%` }}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
             tabIndex={0}
             onKeyDown={handleKeyDown}
             ref={sliderRef}
-          ></div>
+          />
         </div>
         <div className="arrow right-arrow"></div>
       </div>
