@@ -33,7 +33,6 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Returns the total difference of the absolute value of each element of two equally sized arrays.
   const totalDifference = (vehicleArray: number[]): number => {
-    // Check length equality.
     if (attributeArray.length !== vehicleArray.length) {
       throw new Error("Arrays must be of equal length.");
     }
@@ -47,20 +46,32 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
     return total;
   };
 
+  // Returns a random index of provided array that matches target value.
+  const getRandomMatchingIndex = (array: number[], target: number): number => {
+    const matchingIndices: number[] = array.reduce((acc, val, idx) => {
+      if (val === target) {
+        acc.push(idx);
+      }
+      return acc;
+    }, [] as number[]);
+
+    // Skip randomization when only one element.
+    if (matchingIndices.length === 1) {
+      return matchingIndices[0];
+    }
+
+    const randomIndex =
+      matchingIndices[Math.floor(Math.random() * matchingIndices.length)];
+
+    return randomIndex;
+  };
+
   // Returns the vehicle element with the closest AttributeArray to the array chosen by the user.
   const findClosestVehicleByAttributeArray = (): VehicleProps => {
-    let minDifferenceIndex = 0;
-    // Set baseline difference based on first index.
-    let minDifference = totalDifference(
-      vehicles[minDifferenceIndex].intrinsicAttributeArray
-    );
+    let minDifference: number = 0;
+    let differenceScores: number[] = [];
 
-    console.log(
-      `Difference for vehicle ${vehicles[minDifferenceIndex].make} ${vehicles[minDifferenceIndex].model}: `,
-      minDifference
-    );
-
-    for (let i = 1; i < vehicles.length; i++) {
+    for (let i = 0; i < vehicles.length; i++) {
       const difference = totalDifference(vehicles[i].intrinsicAttributeArray);
 
       console.log(
@@ -68,20 +79,13 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
         difference
       );
 
-      if (difference === 0) {
-        minDifference = difference;
-        break;
-      }
-
-      if (difference < minDifference) {
-        minDifference = difference;
-        minDifferenceIndex = i;
-      }
+      differenceScores.push(difference);
     }
+    
+    minDifference = Math.min(...differenceScores);
 
-    console.log(vehicles[minDifferenceIndex]);
-
-    return vehicles[minDifferenceIndex];
+    // In the case of multiple vehicles with the same overall difference, pick a random one to return.
+    return vehicles[getRandomMatchingIndex(differenceScores, minDifference)];
   };
 
   return (

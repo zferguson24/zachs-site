@@ -99,7 +99,7 @@ const NumberLine: React.FC<NumberLineProps> = ({
     document.removeEventListener("touchend", handleTouchEnd);
   };
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchStart = () => {
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", handleTouchEnd);
   };
