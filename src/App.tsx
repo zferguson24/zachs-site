@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <CarSelectionProvider>
-        <BrowserRouter basename="/zachs-site/">
+        <BrowserRouter basename="/">
           <div style={{ display: "flex" }}>
             {/* <Sidebar items={menuItems} /> */}
             <div style={{ flex: 1 }}>
