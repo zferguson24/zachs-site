@@ -31,6 +31,11 @@ const CarSelection: React.FC = () => {
   // Render the vehicle from the result of the selection algorithm.
   const updateChosenVehicle = (): void => {
     setChosenVehicle(findClosestVehicleByAttributeArray());
+
+    fetch('/api/gear/armor')
+      .then(r => r.json())
+      .then(data => console.log('[timewalkers] /api/gear/armor:', data))
+      .catch(err => console.error('[timewalkers] /api/gear/armor failed:', err));
   };
 
   useEffect(() => {
