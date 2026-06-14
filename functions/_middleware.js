@@ -1,5 +1,5 @@
 const COOKIE_NAME = 'zs_session';
-const AUTH_PATH = '/__login';
+const AUTH_PATH = '/login';
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 const SESSION_MAX_AGE_S = 7 * 24 * 60 * 60;
 
