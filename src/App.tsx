@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import CarSelection from "./pages/CarSelection";
+import Landing from "./pages/Landing";
+import TimewalkingGearSelection from "./pages/TimewalkingGearSelection";
 import { CarSelectionProvider } from "./services/CarSelectionService";
 // import Sidebar from "./components/Sidebar";
 
@@ -15,7 +17,9 @@ function App() {
             {/* <Sidebar items={menuItems} /> */}
             <div style={{ flex: 1 }}>
               <Routes>
-                <Route path="/" element={<CarSelection />} />
+                <Route path="/" element={<Landing />} />
+                <Route path="/car-selection" element={<CarSelection />} />
+                <Route path="/timewalking" element={<TimewalkingGearSelection />} />
               </Routes>
             </div>
           </div>
