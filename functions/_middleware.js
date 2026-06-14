@@ -15,6 +15,24 @@ async function sign(secret, data) {
   return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
 
+// Constant-time string comparison — prevents timing attacks on password/cookie checks.
+// HMACs both inputs with a per-call random key so output length is always identical,
+// then XORs the bytes rather than short-circuiting on the first mismatch.
+async function timingSafeEqual(a, b) {
+  const enc = new TextEncoder();
+  const keyData = crypto.getRandomValues(new Uint8Array(32));
+  const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const [sigA, sigB] = await Promise.all([
+    crypto.subtle.sign('HMAC', key, enc.encode(a)),
+    crypto.subtle.sign('HMAC', key, enc.encode(b)),
+  ]);
+  const ba = new Uint8Array(sigA);
+  const bb = new Uint8Array(sigB);
+  let diff = 0;
+  for (let i = 0; i < ba.length; i++) diff |= ba[i] ^ bb[i];
+  return diff === 0;
+}
+
 function getCookie(request, name) {
   const header = request.headers.get('Cookie') ?? '';
   const match = header.split(';').find(c => c.trim().startsWith(`${name}=`));
@@ -28,7 +46,7 @@ async function isValidSession(cookie, secret) {
   const ts = cookie.slice(0, dot);
   const sig = cookie.slice(dot + 1);
   if (Date.now() - parseInt(ts, 10) > SESSION_DURATION_MS) return false;
-  return (await sign(secret, ts)) === sig;
+  return timingSafeEqual(await sign(secret, ts), sig);
 }
 
 function loginPage(error = '') {
@@ -106,7 +124,7 @@ export async function onRequest(context) {
   // POST: validate password and set signed session cookie
   if (url.pathname === AUTH_PATH && request.method === 'POST') {
     const form = await request.formData();
-    if (form.get('password') !== env.GATE_PASSWORD) {
+    if (!(await timingSafeEqual(form.get('password') ?? '', env.GATE_PASSWORD))) {
       return new Response(loginPage('Incorrect password.'), {
         status: 401,
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
