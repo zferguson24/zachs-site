@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import GearSearch from "../components/timewalking/GearSearch";
 import CharacterPanel from "../components/timewalking/CharacterPanel";
@@ -14,6 +15,24 @@ const Page = styled.div`
   padding: 48px 24px 72px;
   color: #e8f0f8;
   font-family: inherit;
+`;
+
+const BackButton = styled.button`
+  width: 100%;
+  max-width: 760px;
+  background: none;
+  border: none;
+  color: #7a9ab5;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s;
+  text-align: left;
+
+  &:hover { color: #e8f0f8; }
 `;
 
 // DB armor slot names → EquipmentSlot enum values
@@ -49,15 +68,18 @@ function deriveTargetSlot(item: GearResult, equipment: SlotState[]): string | nu
   return WEAPON_TO_SLOT[item.weaponSlot] ?? null;
 }
 
-const CHARACTER_NAME = "JARAXXUS";
-
 const TimewalkingGearSelection: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const characterName = (location.state as { characterName?: string } | null)?.characterName;
+
   const [character, setCharacter] = useState<CharacterData | null>(null);
   const [characterLoading, setCharacterLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/characters/${CHARACTER_NAME}`)
+    if (!characterName) return;
+    fetch(`/api/characters/${characterName}`)
       .then((res) => {
         if (!res.ok) throw new Error("not found");
         return res.json() as Promise<CharacterData>;
@@ -65,7 +87,11 @@ const TimewalkingGearSelection: React.FC = () => {
       .then(setCharacter)
       .catch(() => setToast("Could not load character data."))
       .finally(() => setCharacterLoading(false));
-  }, []);
+  }, [characterName]);
+
+  if (!characterName) {
+    return <Navigate to="/timewalking/characters" replace />;
+  }
 
   const handleEquip = async (item: GearResult, explicitSlot?: string) => {
     if (!character) return;
@@ -77,7 +103,7 @@ const TimewalkingGearSelection: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+      const res = await fetch(`/api/characters/${characterName}/gear`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slots: [{ slot: targetSlot, itemName: item.name }] }),
@@ -100,7 +126,7 @@ const TimewalkingGearSelection: React.FC = () => {
 
   const handleUnequipSlot = async (slot: string) => {
     try {
-      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+      const res = await fetch(`/api/characters/${characterName}/gear`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slots: [slot] }),
@@ -119,7 +145,7 @@ const TimewalkingGearSelection: React.FC = () => {
 
   const handleUnequipAll = async () => {
     try {
-      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+      const res = await fetch(`/api/characters/${characterName}/gear`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slots: ALL_EQUIPMENT_SLOTS }),
@@ -138,6 +164,10 @@ const TimewalkingGearSelection: React.FC = () => {
 
   return (
     <Page>
+      <BackButton onClick={() => navigate("/timewalking/characters")}>
+        ⮜ Back to Characters
+      </BackButton>
+
       <GearSearch onEquip={handleEquip} />
 
       <CharacterPanel

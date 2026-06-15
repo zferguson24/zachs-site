@@ -58,3 +58,9 @@ export interface GearSearchResultDTO {
   armorPieces: ArmorPieceDTO[];
   weapons: WeaponDTO[];
 }
+
+export interface CharacterSummaryDTO {
+  name: string;
+  race: string;
+  characterClass: string;
+}
