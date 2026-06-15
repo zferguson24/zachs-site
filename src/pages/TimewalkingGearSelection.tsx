@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import GearSearch from "../components/timewalking/GearSearch";
+import CharacterPanel from "../components/timewalking/CharacterPanel";
+import Toast from "../components/Toast";
+import { GearResult, CharacterData, SlotState } from "../types/timewalking";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -7,267 +11,143 @@ const Page = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px;
+  padding: 48px 24px 72px;
   color: #e8f0f8;
   font-family: inherit;
 `;
 
-const SearchWrapper = styled.div`
-  width: 100%;
-  max-width: 640px;
-`;
+// DB armor slot names → EquipmentSlot enum values
+// Ring/Trinket auto-fill is handled here; explicit slot overrides come from GearSearch slot buttons
+const ARMOR_TO_SLOT: Record<string, string> = {
+  Helm: "HEAD", Shoulder: "SHOULDERS", Chest: "CHEST", Bracers: "WRIST",
+  Gloves: "HANDS", Belt: "WAIST", Legs: "LEGS", Feet: "FEET",
+  Neck: "NECK", Cloak: "BACK",
+};
 
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 16px;
-  background-color: #253344;
-  border: 1px solid #3d5068;
-  border-radius: 6px;
-  color: #e8f0f8;
-  outline: none;
-  box-sizing: border-box;
+const WEAPON_TO_SLOT: Record<string, string> = {
+  "1H": "MAIN_HAND", "2H": "MAIN_HAND", Offhand: "OFF_HAND", Ranged: "MAIN_HAND",
+};
 
-  &::placeholder {
-    color: #5a7490;
+const ALL_EQUIPMENT_SLOTS = [
+  "HEAD", "NECK", "SHOULDERS", "BACK", "CHEST", "WRIST", "HANDS",
+  "WAIST", "LEGS", "FEET", "FINGER_1", "FINGER_2", "TRINKET_1", "TRINKET_2",
+  "MAIN_HAND", "OFF_HAND",
+];
+
+function deriveTargetSlot(item: GearResult, equipment: SlotState[]): string | null {
+  if (item.kind === "armor") {
+    if (item.slot === "Ring") {
+      const f1 = equipment.find((e) => e.slot === "FINGER_1");
+      return f1?.equipped ? "FINGER_2" : "FINGER_1";
+    }
+    if (item.slot === "Trinket") {
+      const t1 = equipment.find((e) => e.slot === "TRINKET_1");
+      return t1?.equipped ? "TRINKET_2" : "TRINKET_1";
+    }
+    return ARMOR_TO_SLOT[item.slot] ?? null;
   }
-
-  &:focus {
-    border-color: #6a9dbf;
-  }
-`;
-
-const ResultsArea = styled.div`
-  width: 100%;
-  max-width: 640px;
-  margin-top: 16px;
-`;
-
-const spin = keyframes`
-  to { transform: rotate(360deg); }
-`;
-
-const Spinner = styled.div`
-  width: 28px;
-  height: 28px;
-  border: 3px solid #3d5068;
-  border-top-color: #6a9dbf;
-  border-radius: 50%;
-  animation: ${spin} 0.75s linear infinite;
-  margin: 32px auto;
-`;
-
-const ResultCard = styled.div`
-  padding: 12px 16px;
-  background-color: #253344;
-  border: 1px solid #3d5068;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-`;
-
-const IconWrapper = styled.div`
-  position: relative;
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-`;
-
-const ItemIconImg = styled.img`
-  width: 56px;
-  height: 56px;
-  display: block;
-`;
-
-const IconBorder = styled.img`
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  width: 68px;
-  height: 68px;
-  pointer-events: none;
-`;
-
-const ResultContent = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const ResultHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const ResultName = styled.span`
-  font-size: 15px;
-  font-weight: 600;
-  color: #e8f0f8;
-`;
-
-const TypeBadge = styled.span<{ $isWeapon: boolean }>`
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background-color: ${({ $isWeapon }) => ($isWeapon ? "#2e3f28" : "#2a2e42")};
-  color: ${({ $isWeapon }) => ($isWeapon ? "#7bc97a" : "#8fa8e8")};
-  border: 1px solid ${({ $isWeapon }) => ($isWeapon ? "#4a7a48" : "#4a5a88")};
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`;
-
-const ResultMeta = styled.div`
-  font-size: 13px;
-  color: #7a9ab5;
-  margin-top: 6px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-`;
-
-const MetaItem = styled.span``;
-
-const EmptyMessage = styled.div`
-  text-align: center;
-  color: #5a7490;
-  font-size: 14px;
-  margin-top: 32px;
-`;
-
-interface ArmorPieceDTO {
-  armorType: string;
-  slot: string;
-  name: string;
-  expansion: string;
-  primaryStat: string;
-  secondaryStat: string;
-  cost: number;
-  notes: string;
-  wowheadUrl: string;
-  iconUrl: string | null;
+  return WEAPON_TO_SLOT[item.weaponSlot] ?? null;
 }
 
-interface WeaponDTO {
-  weaponSlot: string;
-  weaponStat: string;
-  weaponType: string;
-  name: string;
-  expansion: string;
-  primaryStat: string;
-  secondaryStat: string;
-  cost: number;
-  notes: string;
-  wowheadUrl: string;
-  iconUrl: string | null;
-}
-
-type GearResult =
-  | ({ kind: "armor" } & ArmorPieceDTO)
-  | ({ kind: "weapon" } & WeaponDTO);
-
-const DEBOUNCE_MS = 500;
-const MIN_LENGTH = 3;
+const CHARACTER_NAME = "JARAXXUS";
 
 const TimewalkingGearSelection: React.FC = () => {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<GearResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [character, setCharacter] = useState<CharacterData | null>(null);
+  const [characterLoading, setCharacterLoading] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    fetch(`/api/characters/${CHARACTER_NAME}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("not found");
+        return res.json() as Promise<CharacterData>;
+      })
+      .then(setCharacter)
+      .catch(() => setToast("Could not load character data."))
+      .finally(() => setCharacterLoading(false));
+  }, []);
 
-    if (query.length < MIN_LENGTH) {
-      setResults([]);
-      setLoading(false);
-      setSearched(false);
+  const handleEquip = async (item: GearResult, explicitSlot?: string) => {
+    if (!character) return;
+
+    const targetSlot = explicitSlot ?? deriveTargetSlot(item, character.equipment);
+    if (!targetSlot) {
+      setToast(`Cannot determine equip slot for "${item.name}".`);
       return;
     }
 
-    setLoading(true);
-    debounceRef.current = setTimeout(async () => {
-      const encoded = encodeURIComponent(query);
-      const [armorRes, weaponRes] = await Promise.all([
-        fetch(`/api/gear/armor/search?name=${encoded}`),
-        fetch(`/api/gear/weapons/search?name=${encoded}`),
-      ]);
+    try {
+      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slots: [{ slot: targetSlot, itemName: item.name }] }),
+      });
 
-      const [armorData, weaponData]: [ArmorPieceDTO[], WeaponDTO[]] =
-        await Promise.all([armorRes.json(), weaponRes.json()]);
+      if (res.ok) {
+        const data: { character: CharacterData } = await res.json();
+        setCharacter(data.character);
+      } else if (res.status === 400) {
+        const data: { message: string; rejected: { slot: string; reason: string }[] } =
+          await res.json();
+        setToast(data.rejected?.[0]?.reason ?? data.message ?? "Validation failed.");
+      } else {
+        setToast("Failed to equip item. Please try again.");
+      }
+    } catch {
+      setToast("Network error. Please try again.");
+    }
+  };
 
-      const merged: GearResult[] = [
-        ...armorData.map((a) => ({ kind: "armor" as const, ...a })),
-        ...weaponData.map((w) => ({ kind: "weapon" as const, ...w })),
-      ].sort((a, b) => a.name.localeCompare(b.name));
+  const handleUnequipSlot = async (slot: string) => {
+    try {
+      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slots: [slot] }),
+      });
 
-      setResults(merged);
-      setLoading(false);
-      setSearched(true);
-    }, DEBOUNCE_MS);
+      if (res.ok) {
+        const data: CharacterData = await res.json();
+        setCharacter(data);
+      } else {
+        setToast("Failed to unequip item. Please try again.");
+      }
+    } catch {
+      setToast("Network error. Please try again.");
+    }
+  };
 
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [query]);
+  const handleUnequipAll = async () => {
+    try {
+      const res = await fetch(`/api/characters/${CHARACTER_NAME}/gear`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slots: ALL_EQUIPMENT_SLOTS }),
+      });
+
+      if (res.ok) {
+        const data: CharacterData = await res.json();
+        setCharacter(data);
+      } else {
+        setToast("Failed to unequip items. Please try again.");
+      }
+    } catch {
+      setToast("Network error. Please try again.");
+    }
+  };
 
   return (
     <Page>
-      <SearchWrapper>
-        <SearchInput
-          type="text"
-          placeholder="Search gear by name..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoFocus
-        />
-      </SearchWrapper>
+      <GearSearch onEquip={handleEquip} />
 
-      <ResultsArea>
-        {loading && <Spinner />}
+      <CharacterPanel
+        character={character}
+        loading={characterLoading}
+        onUnequipAll={handleUnequipAll}
+        onUnequipSlot={handleUnequipSlot}
+      />
 
-        {!loading && searched && results.length === 0 && (
-          <EmptyMessage>No gear found for "{query}"</EmptyMessage>
-        )}
-
-        {!loading &&
-          results.map((item, i) => (
-            <ResultCard key={`${item.kind}-${item.name}-${i}`}>
-              {item.iconUrl && (
-                <IconWrapper>
-                  <ItemIconImg src={item.iconUrl} alt={item.name} />
-                  <IconBorder
-                    src="https://wow.zamimg.com/images/Icon/large/border/default.png"
-                    alt=""
-                  />
-                </IconWrapper>
-              )}
-              <ResultContent>
-                <ResultHeader>
-                  <ResultName>{item.name}</ResultName>
-                  <TypeBadge $isWeapon={item.kind === "weapon"}>
-                    {item.kind === "weapon" ? "Weapon" : "Armor"}
-                  </TypeBadge>
-                </ResultHeader>
-                <ResultMeta>
-                  <MetaItem>
-                    {item.kind === "armor"
-                      ? `${item.armorType} · ${item.slot}`
-                      : `${item.weaponType} · ${item.weaponSlot}`}
-                  </MetaItem>
-                  <MetaItem>{item.expansion}</MetaItem>
-                  {item.primaryStat && <MetaItem>{item.primaryStat}</MetaItem>}
-                  {item.secondaryStat && (
-                    <MetaItem>{item.secondaryStat}</MetaItem>
-                  )}
-                </ResultMeta>
-              </ResultContent>
-            </ResultCard>
-          ))}
-      </ResultsArea>
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </Page>
   );
 };
