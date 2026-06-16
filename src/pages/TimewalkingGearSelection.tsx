@@ -1,39 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { ROUTES } from "../constants/routes";
+import { Page, BackButton } from "./TimewalkingGearSelection.styles";
 import GearSearch from "../components/timewalking/GearSearch";
 import CharacterPanel from "../components/timewalking/CharacterPanel";
 import Toast from "../components/Toast";
 import { GearResult, CharacterData, SlotState } from "../types/timewalking";
-
-const Page = styled.div`
-  min-height: 100vh;
-  background-color: #1e2a38;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 48px 24px 72px;
-  color: #e8f0f8;
-  font-family: inherit;
-`;
-
-const BackButton = styled.button`
-  width: 100%;
-  max-width: 760px;
-  background: none;
-  border: none;
-  color: #7a9ab5;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0 0 24px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: color 0.15s;
-  text-align: left;
-
-  &:hover { color: #e8f0f8; }
-`;
 
 // DB armor slot names → EquipmentSlot enum values
 // Ring/Trinket auto-fill is handled here; explicit slot overrides come from GearSearch slot buttons
@@ -90,7 +62,7 @@ const TimewalkingGearSelection: React.FC = () => {
   }, [characterName]);
 
   if (!characterName) {
-    return <Navigate to="/timewalking/characters" replace />;
+    return <Navigate to={ROUTES.TIMEWALKING_CHARACTERS} replace />;
   }
 
   const handleEquip = async (item: GearResult, explicitSlot?: string) => {
@@ -164,7 +136,7 @@ const TimewalkingGearSelection: React.FC = () => {
 
   return (
     <Page>
-      <BackButton onClick={() => navigate("/timewalking/characters")}>
+      <BackButton onClick={() => navigate(ROUTES.TIMEWALKING_CHARACTERS)}>
         ⮜ Back to Characters
       </BackButton>
 

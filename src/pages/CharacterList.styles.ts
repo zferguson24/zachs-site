@@ -1,27 +1,31 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
+import {
+  BG_BASE, BG_ELEVATED, BG_HOVER, BG_ACCENT, BG_ACCENT_HOVER,
+  BORDER, BORDER_HOVER, BORDER_ACCENT,
+  TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ACCENT, TEXT_MUTED_ACTION, TEXT_ERROR,
+} from "../styles/tokens";
 
-export const Page = styled.div`
-  min-height: 100vh;
-  background-color: #1e2a38;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 48px 24px 72px;
-  color: #e8f0f8;
-  font-family: inherit;
-`;
+export {
+  Page,
+  Spinner,
+  EmptyMessage,
+  AnimatedCardWrapper,
+  IconWrapper as SingleIconWrapper,
+  IconImg    as RaceClassIcon,
+  IconBorder as RaceClassIconBorder,
+} from "../styles/shared";
 
 export const PageTitle = styled.h1`
   font-size: 22px;
   font-weight: 700;
-  color: #e8f0f8;
+  color: ${TEXT_PRIMARY};
   margin: 0 0 6px;
   letter-spacing: 0.02em;
 `;
 
 export const PageSubtitle = styled.p`
   font-size: 13px;
-  color: #7a9ab5;
+  color: ${TEXT_SECONDARY};
   margin: 0 0 28px;
 `;
 
@@ -32,8 +36,8 @@ export const ListArea = styled.div`
 
 export const CharacterCard = styled.div`
   padding: 14px 20px;
-  background-color: #253344;
-  border: 1px solid #3d5068;
+  background-color: ${BG_ELEVATED};
+  border: 1px solid ${BORDER};
   border-radius: 6px;
   margin-bottom: 8px;
   display: flex;
@@ -42,8 +46,8 @@ export const CharacterCard = styled.div`
   cursor: pointer;
 
   &:hover {
-    border-color: #6a9dbf;
-    background-color: #2a3a4d;
+    border-color: ${BORDER_HOVER};
+    background-color: ${BG_HOVER};
   }
 `;
 
@@ -51,28 +55,6 @@ export const IconsGroup = styled.div`
   display: flex;
   gap: 14px;
   flex-shrink: 0;
-`;
-
-export const SingleIconWrapper = styled.div`
-  position: relative;
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-`;
-
-export const RaceClassIcon = styled.img`
-  width: 56px;
-  height: 56px;
-  display: block;
-`;
-
-export const RaceClassIconBorder = styled.img`
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  width: 68px;
-  height: 68px;
-  pointer-events: none;
 `;
 
 export const CharInfo = styled.div`
@@ -92,46 +74,27 @@ export const CharName = styled.div<{ $color: string }>`
 
 export const CharMeta = styled.div`
   font-size: 13px;
-  color: #7a9ab5;
+  color: ${TEXT_SECONDARY};
   margin-top: 2px;
-`;
-
-const spin = keyframes`to { transform: rotate(360deg); }`;
-
-export const Spinner = styled.div`
-  width: 28px;
-  height: 28px;
-  border: 3px solid #3d5068;
-  border-top-color: #6a9dbf;
-  border-radius: 50%;
-  animation: ${spin} 0.75s linear infinite;
-  margin: 32px auto;
-`;
-
-export const EmptyMessage = styled.div`
-  text-align: center;
-  color: #5a7490;
-  font-size: 14px;
-  margin-top: 32px;
 `;
 
 export const AddCharacterCard = styled.div`
   padding: 10px 20px;
   background-color: transparent;
-  border: 1px dashed #3d5068;
+  border: 1px dashed ${BORDER};
   border-radius: 6px;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  color: #5a7490;
+  color: ${TEXT_DIM};
   font-size: 14px;
   transition: border-color 0.15s, color 0.15s;
 
   &:hover {
-    border-color: #6a9dbf;
-    color: #a0c0d8;
+    border-color: ${BORDER_HOVER};
+    color: ${TEXT_MUTED_ACTION};
   }
 `;
 
@@ -143,8 +106,8 @@ export const AddIcon = styled.span`
 
 export const CreateForm = styled.div`
   padding: 16px 20px;
-  background-color: #253344;
-  border: 1px solid #3d5068;
+  background-color: ${BG_ELEVATED};
+  border: 1px solid ${BORDER};
   border-radius: 6px;
   margin-bottom: 8px;
   display: flex;
@@ -167,40 +130,47 @@ export const FormField = styled.div`
 export const FormLabel = styled.label`
   font-size: 11px;
   font-weight: 600;
-  color: #7a9ab5;
+  color: ${TEXT_SECONDARY};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
 
 export const FormInput = styled.input`
-  padding: 8px 12px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 12px;
   font-size: 14px;
-  background-color: #1e2a38;
-  border: 1px solid #3d5068;
+  background-color: ${BG_BASE};
+  border: 1px solid ${BORDER};
   border-radius: 4px;
-  color: #e8f0f8;
+  color: ${TEXT_PRIMARY};
   outline: none;
-  font-family: inherit;
 
-  &::placeholder { color: #5a7490; }
-  &:focus { border-color: #6a9dbf; }
+  &::placeholder { color: ${TEXT_DIM}; }
+  &:focus { border-color: ${BORDER_HOVER}; }
 `;
 
 export const FormSelect = styled.select`
-  padding: 8px 12px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 36px 0 12px;
   font-size: 14px;
-  background-color: #1e2a38;
-  border: 1px solid #3d5068;
+  background-color: ${BG_BASE};
+  border: 1px solid ${BORDER};
   border-radius: 4px;
-  color: #e8f0f8;
+  color: ${TEXT_PRIMARY};
   outline: none;
-  font-family: inherit;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a9ab5' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 
-  &:focus { border-color: #6a9dbf; }
+  &:focus { border-color: ${BORDER_HOVER}; }
   &:disabled { opacity: 0.5; cursor: default; }
 
-  option { background-color: #1e2a38; }
+  option { background-color: ${BG_BASE}; }
 `;
 
 export const FormActions = styled.div`
@@ -214,14 +184,13 @@ export const SubmitButton = styled.button`
   font-size: 13px;
   font-weight: 600;
   border-radius: 4px;
-  border: 1px solid #4a7a9b;
-  background-color: #1e3a52;
-  color: #a0d0f0;
+  border: 1px solid ${BORDER_ACCENT};
+  background-color: ${BG_ACCENT};
+  color: ${TEXT_ACCENT};
   cursor: pointer;
-  font-family: inherit;
   transition: border-color 0.15s, background-color 0.15s;
 
-  &:hover:not(:disabled) { border-color: #6a9dbf; background-color: #244870; }
+  &:hover:not(:disabled) { border-color: ${BORDER_HOVER}; background-color: ${BG_ACCENT_HOVER}; }
   &:disabled { opacity: 0.5; cursor: default; }
 `;
 
@@ -229,32 +198,20 @@ export const CancelButton = styled.button`
   padding: 7px 16px;
   font-size: 13px;
   border-radius: 4px;
-  border: 1px solid #3d5068;
+  border: 1px solid ${BORDER};
   background-color: transparent;
-  color: #7a9ab5;
+  color: ${TEXT_SECONDARY};
   cursor: pointer;
-  font-family: inherit;
   transition: border-color 0.15s, color 0.15s;
 
-  &:hover { border-color: #6a9dbf; color: #a0c0d8; }
+  &:hover { border-color: ${BORDER_HOVER}; color: ${TEXT_MUTED_ACTION}; }
 `;
 
 export const FormError = styled.div`
   font-size: 13px;
-  color: #e07070;
+  color: ${TEXT_ERROR};
   background-color: rgba(224, 80, 80, 0.1);
   border: 1px solid rgba(224, 80, 80, 0.25);
   border-radius: 4px;
   padding: 7px 12px;
-`;
-
-const fadeSlideUp = keyframes`
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-`;
-
-export const AnimatedCardWrapper = styled.div<{ $index: number }>`
-  opacity: 0;
-  animation: ${fadeSlideUp} 0.25s ease both;
-  animation-delay: ${({ $index }) => $index * 50}ms;
 `;

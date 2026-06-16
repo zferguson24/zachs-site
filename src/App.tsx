@@ -1,10 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import "./App.css";
 import CarSelection from "./pages/CarSelection";
 import CharacterList from "./pages/CharacterList";
 import Landing from "./pages/Landing";
 import TimewalkingGearSelection from "./pages/TimewalkingGearSelection";
 import { CarSelectionProvider } from "./services/CarSelectionService";
+import { ROUTES } from "./constants/routes";
 // import Sidebar from "./components/Sidebar";
 
 // const menuItems = [{ name: "Car Selection", path: "/", icon: "🚗" }];
@@ -18,11 +18,11 @@ function App() {
             {/* <Sidebar items={menuItems} /> */}
             <div style={{ flex: 1 }}>
               <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/car-selection" element={<CarSelection />} />
-                <Route path="/timewalking" element={<Navigate to="/timewalking/characters" replace />} />
-                <Route path="/timewalking/characters" element={<CharacterList />} />
-                <Route path="/timewalking/gear" element={<TimewalkingGearSelection />} />
+                <Route path={ROUTES.HOME}                   element={<Landing />} />
+                <Route path={ROUTES.CAR_SELECTION}          element={<CarSelection />} />
+                <Route path={ROUTES.TIMEWALKING}            element={<Navigate to={ROUTES.TIMEWALKING_CHARACTERS} replace />} />
+                <Route path={ROUTES.TIMEWALKING_CHARACTERS} element={<CharacterList />} />
+                <Route path={ROUTES.TIMEWALKING_GEAR}       element={<TimewalkingGearSelection />} />
               </Routes>
             </div>
           </div>

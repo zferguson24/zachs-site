@@ -5,9 +5,7 @@ import {
   SlotText, SlotItemName, SlotLabel, WeaponRowWrap, UnequipBtn, LoadingText,
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
-
-const ICON_BASE = "https://wow.zamimg.com/images/wow/icons/large/";
-const BORDER_URL = "https://wow.zamimg.com/images/Icon/large/border/default.png";
+import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/icons";
 
 const SLOT_LABELS: Record<string, string> = {
   HEAD: "Head", NECK: "Neck", SHOULDERS: "Shoulders", BACK: "Back",
@@ -48,7 +46,7 @@ function formatEnum(raw: string): string {
 
 function slotIconSrc(slotName: string, slotData: SlotState | undefined): string {
   if (slotData?.equipped && slotData.item?.iconUrl) return slotData.item.iconUrl;
-  return `${ICON_BASE}${SLOT_PLACEHOLDERS[slotName]}.jpg`;
+  return `${ICON_BASE_LARGE}${SLOT_PLACEHOLDERS[slotName]}.jpg`;
 }
 
 const CharacterPanel: React.FC<CharacterPanelProps> = ({
@@ -70,7 +68,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       <>
         <IconWrap>
           <SlotIcon src={slotIconSrc(slotName, s)} alt={SLOT_LABELS[slotName]} />
-          <SlotBorder src={BORDER_URL} alt="" />
+          <SlotBorder src={ICON_BORDER_URL} alt="" />
         </IconWrap>
         <SlotText $reversed={reversed}>
           {s?.equipped && s.item && <SlotItemName>{s.item.name}</SlotItemName>}
