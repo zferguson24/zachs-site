@@ -7,8 +7,7 @@ import {
   EmptyMessage, SlotButtonRow, SlotButton, AnimatedCardWrapper,
 } from "./GearSearch.styles";
 import { GearSearchResultDTO, GearResult } from "../../types/timewalking";
-
-const ICON_BORDER_URL = "https://wow.zamimg.com/images/Icon/large/border/default.png";
+import { ICON_BORDER_URL } from "../../constants/icons";
 const DEBOUNCE_MS = 500;
 const MIN_LENGTH = 3;
 

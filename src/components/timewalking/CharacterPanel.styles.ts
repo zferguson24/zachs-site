@@ -1,4 +1,9 @@
 import styled from "styled-components";
+import {
+  BG_BASE, BG_ELEVATED, BG_SLOT,
+  BORDER, BORDER_HOVER, BORDER_SLOT, BORDER_DIVIDER,
+  TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ITEM,
+} from "../../styles/tokens";
 
 export const Panel = styled.div`
   width: 100%;
@@ -16,18 +21,18 @@ export const PanelHead = styled.div`
 export const CharName = styled.span`
   font-size: 16px;
   font-weight: 700;
-  color: #e8f0f8;
+  color: ${TEXT_PRIMARY};
   letter-spacing: 0.03em;
 `;
 
 export const CharMeta = styled.span`
   font-size: 13px;
-  color: #7a9ab5;
+  color: ${TEXT_SECONDARY};
 `;
 
 export const PanelDivider = styled.hr`
   border: none;
-  border-top: 1px solid #2d4055;
+  border-top: 1px solid ${BORDER_DIVIDER};
   margin: 0 0 14px;
 `;
 
@@ -44,8 +49,8 @@ export const SlotCell = styled.div<{ $reversed: boolean }>`
   gap: 10px;
   padding: 5px 8px;
   border-radius: 5px;
-  background-color: #1b2634;
-  border: 1px solid #222f3f;
+  background-color: ${BG_SLOT};
+  border: 1px solid ${BORDER_SLOT};
 `;
 
 export const WeaponSlotCell = styled(SlotCell)`
@@ -83,7 +88,7 @@ export const SlotText = styled.div<{ $reversed: boolean }>`
 export const SlotItemName = styled.div`
   font-size: 12px;
   font-weight: 600;
-  color: #0070dd;
+  color: ${TEXT_ITEM};
   text-shadow: 0 0 2px rgba(0, 0, 0, 1), 0 1px 4px rgba(0, 0, 0, 0.9);
   white-space: nowrap;
   overflow: hidden;
@@ -93,7 +98,7 @@ export const SlotItemName = styled.div`
 
 export const SlotLabel = styled.div`
   font-size: 11px;
-  color: #5a7490;
+  color: ${TEXT_DIM};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
@@ -109,23 +114,23 @@ export const UnequipBtn = styled.button`
   margin-top: 12px;
   width: 100%;
   padding: 9px;
-  background-color: #1e2a38;
-  border: 1px solid #3d5068;
+  background-color: ${BG_BASE};
+  border: 1px solid ${BORDER};
   border-radius: 6px;
-  color: #5a7490;
+  color: ${TEXT_DIM};
   font-size: 13px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
 
   &:hover {
-    border-color: #6a9dbf;
-    color: #e8f0f8;
-    background-color: #253344;
+    border-color: ${BORDER_HOVER};
+    color: ${TEXT_PRIMARY};
+    background-color: ${BG_ELEVATED};
   }
 `;
 
 export const LoadingText = styled.div`
-  color: #5a7490;
+  color: ${TEXT_DIM};
   font-size: 14px;
   text-align: center;
   margin-top: 32px;

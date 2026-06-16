@@ -45,6 +45,7 @@ export interface CharacterData {
   name: string;
   race: string;
   characterClass: string;
+  gender: string;
   equipment: SlotState[];
 }
 
@@ -63,4 +64,5 @@ export interface CharacterSummaryDTO {
   name: string;
   race: string;
   characterClass: string;
+  gender: string;
 }
