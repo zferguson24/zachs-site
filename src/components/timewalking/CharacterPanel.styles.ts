@@ -1,9 +1,21 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import {
   BG_BASE, BG_ELEVATED, BG_SLOT,
   BORDER, BORDER_HOVER, BORDER_SLOT, BORDER_DIVIDER,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ITEM,
 } from "../../styles/tokens";
+
+const slideInLeft = keyframes`
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+`;
+
+const slideInRight = keyframes`
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+`;
+
+const ROW_MS = 50;
 
 export const Panel = styled.div`
   width: 100%;
@@ -18,11 +30,15 @@ export const PanelHead = styled.div`
   margin-bottom: 12px;
 `;
 
-export const CharName = styled.span`
+export const CharName = styled.span<{ $color: string }>`
   font-size: 16px;
   font-weight: 700;
-  color: ${TEXT_PRIMARY};
+  color: ${({ $color }) => $color};
   letter-spacing: 0.03em;
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 0 6px rgba(0, 0, 0, 1),
+    0 2px 6px rgba(0, 0, 0, 0.9);
 `;
 
 export const CharMeta = styled.span`
@@ -42,7 +58,7 @@ export const SlotGrid = styled.div`
   gap: 5px;
 `;
 
-export const SlotCell = styled.div<{ $reversed: boolean }>`
+export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated: boolean }>`
   display: flex;
   flex-direction: ${({ $reversed }) => ($reversed ? "row-reverse" : "row")};
   align-items: center;
@@ -51,6 +67,14 @@ export const SlotCell = styled.div<{ $reversed: boolean }>`
   border-radius: 5px;
   background-color: ${BG_SLOT};
   border: 1px solid ${BORDER_SLOT};
+  ${({ $animated, $reversed, $row }) => $animated
+    ? css`
+        opacity: 0;
+        animation: ${$reversed ? slideInRight : slideInLeft} ${ROW_MS}ms ease both;
+        animation-delay: ${$row * ROW_MS}ms;
+      `
+    : css`opacity: 1;`
+  }
 `;
 
 export const WeaponSlotCell = styled(SlotCell)`

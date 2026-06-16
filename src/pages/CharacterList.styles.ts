@@ -79,7 +79,8 @@ export const CharMeta = styled.div`
 `;
 
 export const AddCharacterCard = styled.div`
-  padding: 10px 20px;
+  padding: 14px 20px;
+  min-height: 84px;
   background-color: transparent;
   border: 1px dashed ${BORDER};
   border-radius: 6px;

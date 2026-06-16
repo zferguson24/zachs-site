@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Panel, PanelHead, CharName, CharMeta, PanelDivider,
   SlotGrid, SlotCell, WeaponSlotCell, IconWrap, SlotIcon, SlotBorder,
@@ -6,6 +6,7 @@ import {
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
 import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/icons";
+import { CLASS_COLORS } from "../../constants/wow";
 
 const SLOT_LABELS: Record<string, string> = {
   HEAD: "Head", NECK: "Neck", SHOULDERS: "Shoulders", BACK: "Back",
@@ -55,9 +56,18 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
   onUnequipAll,
   onUnequipSlot,
 }) => {
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!loading && character) {
+      hasAnimated.current = true;
+    }
+  }, [loading, character]);
+
   if (loading) return <Panel><LoadingText>Loading character…</LoadingText></Panel>;
   if (!character) return null;
 
+  const animated = !hasAnimated.current;
   const slotMap: Record<string, SlotState> = {};
   for (const s of character.equipment) slotMap[s.slot] = s;
 
@@ -94,7 +104,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
   return (
     <Panel>
       <PanelHead>
-        <CharName>{character.name}</CharName>
+        <CharName $color={CLASS_COLORS[character.characterClass] ?? "#e8f0f8"}>{character.name}</CharName>
         <CharMeta>
           {formatEnum(character.characterClass)} · {formatEnum(character.race)}
         </CharMeta>
@@ -104,8 +114,9 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       <SlotGrid>
         {GRID_SLOTS.map((slot, i) => {
           const reversed = i % 2 === 1;
+          const row = Math.floor(i / 2);
           return (
-            <SlotCell key={slot} $reversed={reversed} {...contextMenuProps(slot)}>
+            <SlotCell key={slot} $reversed={reversed} $row={row} $animated={animated} {...contextMenuProps(slot)}>
               {renderSlotContent(slot, reversed)}
             </SlotCell>
           );
@@ -115,12 +126,12 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       <WeaponRowWrap>
         {slotMap["MAIN_HAND"]?.item?.weaponSlot === "2H" ||
         slotMap["MAIN_HAND"]?.item?.weaponSlot === "Ranged" ? (
-          <WeaponSlotCell $reversed={false} {...contextMenuProps("MAIN_HAND")}>
+          <WeaponSlotCell $reversed={false} $row={LEFT_COL.length} $animated={animated} {...contextMenuProps("MAIN_HAND")}>
             {renderSlotContent("MAIN_HAND", false)}
           </WeaponSlotCell>
         ) : (
           WEAPON_ROW.map((slot, i) => (
-            <WeaponSlotCell key={slot} $reversed={i === 1} {...contextMenuProps(slot)}>
+            <WeaponSlotCell key={slot} $reversed={i === 1} $row={LEFT_COL.length} $animated={animated} {...contextMenuProps(slot)}>
               {renderSlotContent(slot, i === 1)}
             </WeaponSlotCell>
           ))

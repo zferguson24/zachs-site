@@ -20,6 +20,7 @@ function formatEnum(raw: string): string {
 const CharacterList: React.FC = () => {
   const [characters, setCharacters] = useState<CharacterSummaryDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newGender, setNewGender] = useState("");
@@ -27,16 +28,23 @@ const CharacterList: React.FC = () => {
   const [newRace, setNewRace] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [addButtonAnimated, setAddButtonAnimated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("/api/characters")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data: CharacterSummaryDTO[]) => {
         setCharacters(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setFetchError(true);
+        setLoading(false);
+      });
   }, []);
 
   const handleSelect = (name: string) => {
@@ -44,6 +52,7 @@ const CharacterList: React.FC = () => {
   };
 
   const openForm = () => {
+    setAddButtonAnimated(true);
     setNewName("");
     setNewGender("");
     setNewClass("");
@@ -103,11 +112,11 @@ const CharacterList: React.FC = () => {
       <ListArea>
         {loading && <Spinner />}
 
-        {!loading && characters.length === 0 && !formOpen && (
+        {!loading && fetchError && (
           <EmptyMessage>No characters found.</EmptyMessage>
         )}
 
-        {!loading && characters.map((char, i) => {
+        {!loading && !fetchError && characters.map((char, i) => {
           const raceSlug = getRaceIconSlug(char.race, char.gender);
           const classSlug = CLASS_ICON_SLUGS[char.characterClass] ?? "inv_misc_questionmark";
           const classColor = CLASS_COLORS[char.characterClass] ?? "#e8f0f8";
@@ -135,11 +144,10 @@ const CharacterList: React.FC = () => {
           );
         })}
 
-        {!loading && !formOpen && (
-          <AddCharacterCard onClick={openForm}>
-            <AddIcon>+</AddIcon>
-            Create a new character...
-          </AddCharacterCard>
+        {!loading && !fetchError && !formOpen && (
+          addButtonAnimated
+            ? <AddCharacterCard onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard>
+            : <AnimatedCardWrapper $index={characters.length}><AddCharacterCard onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard></AnimatedCardWrapper>
         )}
 
         {!loading && formOpen && (
@@ -153,6 +161,7 @@ const CharacterList: React.FC = () => {
                   placeholder="Character name"
                   value={newName}
                   onChange={(e) => { setNewName(e.target.value); setFormError(null); }}
+                  autoComplete="off"
                   autoFocus
                 />
               </FormField>
