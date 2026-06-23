@@ -10,9 +10,9 @@ import { GearResult, CharacterData, SlotState } from "../types/timewalking";
 // DB armor slot names → EquipmentSlot enum values
 // Ring/Trinket auto-fill is handled here; explicit slot overrides come from GearSearch slot buttons
 const ARMOR_TO_SLOT: Record<string, string> = {
-  Helm: "HEAD", Shoulder: "SHOULDERS", Chest: "CHEST", Bracers: "WRIST",
-  Gloves: "HANDS", Belt: "WAIST", Legs: "LEGS", Feet: "FEET",
-  Neck: "NECK", Cloak: "BACK",
+  Head: "HEAD", Shoulders: "SHOULDERS", Chest: "CHEST", Wrist: "WRIST",
+  Hands: "HANDS", Waist: "WAIST", Legs: "LEGS", Feet: "FEET",
+  Neck: "NECK", Back: "BACK",
 };
 
 const WEAPON_TO_SLOT: Record<string, string> = {
@@ -27,7 +27,7 @@ const ALL_EQUIPMENT_SLOTS = [
 
 function deriveTargetSlot(item: GearResult, equipment: SlotState[]): string | null {
   if (item.kind === "armor") {
-    if (item.slot === "Ring") {
+    if (item.slot === "Finger") {
       const f1 = equipment.find((e) => e.slot === "FINGER_1");
       return f1?.equipped ? "FINGER_2" : "FINGER_1";
     }

@@ -22,17 +22,17 @@ function getSlotOptions(item: GearResult): SlotOption[] | null {
   if (item.kind === "weapon") {
     if (item.weaponSlot === "1H") {
       return [
-        { value: "MAIN_HAND", label: "Main Hand" },
-        { value: "OFF_HAND", label: "Off Hand" },
+        { value: "MAIN_HAND", label: "Main-Hand" },
+        { value: "OFF_HAND", label: "Off-Hand" },
       ];
     }
     return null;
   }
 
-  if (item.slot === "Ring") {
+  if (item.slot === "Finger") {
     return [
-      { value: "FINGER_1", label: "Ring 1" },
-      { value: "FINGER_2", label: "Ring 2" },
+      { value: "FINGER_1", label: "Finger 1" },
+      { value: "FINGER_2", label: "Finger 2" },
     ];
   }
 

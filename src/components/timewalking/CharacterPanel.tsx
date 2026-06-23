@@ -12,9 +12,9 @@ import { CLASS_COLORS } from "../../constants/wow";
 const SLOT_LABELS: Record<string, string> = {
   HEAD: "Head", NECK: "Neck", SHOULDERS: "Shoulders", BACK: "Back",
   CHEST: "Chest", WRIST: "Wrist", HANDS: "Hands", WAIST: "Waist",
-  LEGS: "Legs", FEET: "Feet", FINGER_1: "Ring 1", FINGER_2: "Ring 2",
+  LEGS: "Legs", FEET: "Feet", FINGER_1: "Finger 1", FINGER_2: "Finger 2",
   TRINKET_1: "Trinket 1", TRINKET_2: "Trinket 2",
-  MAIN_HAND: "Main Hand", OFF_HAND: "Off Hand",
+  MAIN_HAND: "Main-Hand", OFF_HAND: "Off-Hand",
 };
 
 // zamimg has no inventoryslot_back — chest texture used as fallback (matches Wowhead's own planner)
