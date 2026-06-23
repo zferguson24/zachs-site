@@ -5,7 +5,7 @@ import {
   SlotText, SlotItemName, SlotLabel, WeaponRowWrap, UnequipBtn, LoadingText,
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
-import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/icons";
+import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/wow";
 import { CLASS_COLORS } from "../../constants/wow";
 
 const SLOT_LABELS: Record<string, string> = {

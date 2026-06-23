@@ -7,7 +7,7 @@ import {
   EmptyMessage, SlotButtonRow, SlotButton, AnimatedCardWrapper,
 } from "./GearSearch.styles";
 import { GearSearchResultDTO, GearResult } from "../../types/timewalking";
-import { ICON_BORDER_URL } from "../../constants/icons";
+import { ICON_BORDER_URL } from "../../constants/wow";
 const DEBOUNCE_MS = 500;
 const MIN_LENGTH = 3;
 

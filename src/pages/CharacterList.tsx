@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CharacterSummaryDTO } from "../types/timewalking";
 import { ROUTES } from "../constants/routes";
-import { ICON_BASE_MEDIUM, ICON_BORDER_URL } from "../constants/icons";
+import { ICON_BASE_MEDIUM, ICON_BORDER_URL } from "../constants/wow";
 import { ALL_CLASSES, VALID_RACES_BY_CLASS, CLASS_ICON_SLUGS, CLASS_COLORS, getRaceIconSlug } from "../constants/wow";
 import {
   Page, PageTitle, PageSubtitle, ListArea, CharacterCard,

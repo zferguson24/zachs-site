@@ -5,7 +5,7 @@ import Landing from "./pages/Landing";
 import TimewalkingGearSelection from "./pages/TimewalkingGearSelection";
 import { CarSelectionProvider } from "./services/CarSelectionService";
 import { ROUTES } from "./constants/routes";
-// import Sidebar from "./components/Sidebar";
+// import Sidebar from "./components/car/Sidebar";
 
 // const menuItems = [{ name: "Car Selection", path: "/", icon: "🚗" }];
 

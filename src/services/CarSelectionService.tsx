@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { vehicles } from "../assets/VehicleConstants";
+import { vehicles } from "../constants/VehicleConstants";
 import { VehicleProps } from "../types/VehicleTypes";
 
 type CarSelectionContextType = {

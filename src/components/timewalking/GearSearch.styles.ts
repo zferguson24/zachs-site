@@ -9,10 +9,13 @@ export {
   Spinner,
   EmptyMessage,
   AnimatedCardWrapper,
+} from "../../styles/shared";
+
+export {
   IconWrapper,
   IconImg    as ItemIconImg,
   IconBorder,
-} from "../../styles/shared";
+} from "./WowIcon.styles";
 
 export const SearchWrapper = styled.div`
   width: 100%;

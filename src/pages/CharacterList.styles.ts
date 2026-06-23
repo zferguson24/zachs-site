@@ -10,10 +10,13 @@ export {
   Spinner,
   EmptyMessage,
   AnimatedCardWrapper,
+} from "../styles/shared";
+
+export {
   IconWrapper as SingleIconWrapper,
   IconImg    as RaceClassIcon,
   IconBorder as RaceClassIconBorder,
-} from "../styles/shared";
+} from "../components/timewalking/WowIcon.styles";
 
 export const PageTitle = styled.h1`
   font-size: 22px;

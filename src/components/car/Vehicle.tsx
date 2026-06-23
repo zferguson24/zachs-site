@@ -1,5 +1,5 @@
 import React from "react";
-import { VehicleProps } from "../types/VehicleTypes";
+import { VehicleProps } from "../../types/VehicleTypes";
 import styled from "styled-components";
 
 const Vehicle: React.FC<VehicleProps> = ({
