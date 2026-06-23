@@ -16,7 +16,7 @@ const ARMOR_TO_SLOT: Record<string, string> = {
 };
 
 const WEAPON_TO_SLOT: Record<string, string> = {
-  "1H": "MAIN_HAND", "2H": "MAIN_HAND", Offhand: "OFF_HAND", Ranged: "MAIN_HAND",
+  "1H": "MAIN_HAND", "2H": "MAIN_HAND", "Off-Hand": "OFF_HAND", Ranged: "MAIN_HAND",
 };
 
 const ALL_EQUIPMENT_SLOTS = [
