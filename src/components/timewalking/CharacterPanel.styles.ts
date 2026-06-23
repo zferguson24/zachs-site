@@ -17,6 +17,11 @@ const slideInRight = keyframes`
   to   { opacity: 1; transform: translateX(0); }
 `;
 
+const slideUp = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
 const holdFill = keyframes`
   0%   { clip-path: circle(0%   at var(--hold-x, 50%) var(--hold-y, 50%)); }
   80%  { clip-path: circle(32%  at var(--hold-x, 50%) var(--hold-y, 50%)); }
@@ -82,11 +87,15 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
   border-radius: ${RADIUS_MD};
   background-color: ${BG_SLOT};
   border: 1px solid ${BORDER_SLOT};
-  ${({ $animated, $reversed, $row }) => $animated
+  ${({ $animated, $reversed, $row, $mobileOrder }) => $animated
     ? css`
         opacity: 0;
         animation: ${$reversed ? slideInRight : slideInLeft} ${ROW_MS}ms ease both;
         animation-delay: ${$row * ROW_MS}ms;
+        @media (max-width: ${BREAKPOINT_MOBILE}) {
+          animation: ${slideUp} ${ROW_MS}ms ease both;
+          animation-delay: ${($mobileOrder - 1) * ROW_MS}ms;
+        }
       `
     : css`opacity: 1;`
   }

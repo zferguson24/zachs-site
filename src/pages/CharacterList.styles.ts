@@ -207,6 +207,7 @@ export const FormInput = styled.input`
 
 export const FormSelect = styled.select`
   height: 36px;
+  width: 100%;
   box-sizing: border-box;
   padding: 0 36px 0 12px;
   font-size: ${FONT_XS};

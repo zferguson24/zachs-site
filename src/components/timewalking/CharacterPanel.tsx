@@ -114,7 +114,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       role: "button" as const,
       tabIndex: 0,
       "aria-label": `${SLOT_LABELS[slotName]}: ${s.item.name} — press Delete or hold to unequip`,
-      title: "Right-click, Delete, or hold to unequip",
+      title: "Right-click or Delete to unequip",
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         onUnequipSlot(slotName);
@@ -183,7 +183,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
             $reversed={false}
             $row={LEFT_COL.length}
             $animated={animated}
-            $mobileOrder={0}
+            $mobileOrder={15}
             {...contextMenuProps("MAIN_HAND")}
           >
             <HoldOverlay $active={holdingSlot === "MAIN_HAND"} />
@@ -196,7 +196,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
               $reversed={i === 1}
               $row={LEFT_COL.length}
               $animated={animated}
-              $mobileOrder={0}
+              $mobileOrder={15 + i}
               {...contextMenuProps(slot)}
             >
               <HoldOverlay $active={holdingSlot === slot} />
