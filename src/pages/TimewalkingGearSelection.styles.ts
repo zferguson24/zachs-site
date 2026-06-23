@@ -1,17 +1,19 @@
 import styled from "styled-components";
-import { TEXT_SECONDARY, TEXT_PRIMARY } from "../styles/tokens";
+import { TEXT_SECONDARY, TEXT_PRIMARY, FONT_XS, FONT_SM } from "../styles/tokens";
 
 export { Page } from "../styles/shared";
 
 export const BackButton = styled.button`
   width: 100%;
-  max-width: 760px;
+  max-width: 960px;
   background: none;
   border: none;
   color: ${TEXT_SECONDARY};
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   cursor: pointer;
-  padding: 0 0 24px;
+  padding: 0 0;
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 6px;

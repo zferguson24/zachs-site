@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { BG_BASE, BORDER, BORDER_HOVER, TEXT_PRIMARY, TEXT_DIM } from "./tokens";
+import { BG_BASE, BORDER, BORDER_HOVER, TEXT_PRIMARY, TEXT_DIM, FONT_XS, FONT_SM } from "./tokens";
 
 export const fadeSlideUp = keyframes`
   from { opacity: 0; transform: translateY(8px); }
@@ -14,7 +14,7 @@ export const AnimatedCardWrapper = styled.div<{ $index: number }>`
   animation-delay: ${({ $index }) => $index * 50}ms;
 `;
 
-export const Spinner = styled.div`
+export const Spinner = styled.div.attrs({ role: "status", "aria-label": "Loading" })`
   width: 28px;
   height: 28px;
   border: 3px solid ${BORDER};
@@ -27,12 +27,13 @@ export const Spinner = styled.div`
 export const EmptyMessage = styled.div`
   text-align: center;
   color: ${TEXT_DIM};
-  font-size: 14px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   margin-top: 32px;
 `;
 
 // Shared page shell used by CharacterList and TimewalkingGearSelection
-export const Page = styled.div`
+export const Page = styled.main`
   min-height: 100vh;
   background-color: ${BG_BASE};
   display: flex;

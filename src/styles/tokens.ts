@@ -15,6 +15,19 @@ export const BORDER_ACCENT   = "#4a7a9b"; // primary action button border
 export const BORDER_NAV      = "#3a6ca0"; // landing nav button
 export const BORDER_NAV_HOVER = "#6aaef5";
 
+// Border radii
+export const RADIUS_SM  = "4px";   // form controls, badges, small buttons
+export const RADIUS_MD  = "6px";   // cards, panels, containers
+export const RADIUS_LG  = "10px";  // large feature buttons
+
+// Font sizes
+export const FONT_XS  = "14px";
+export const FONT_SM  = "16px";
+export const FONT_MD  = "18px";
+export const FONT_LG  = "20px";
+export const FONT_XL  = "22px";
+export const FONT_2XL = "24px";
+
 // Text
 export const TEXT_PRIMARY      = "#e8f0f8";
 export const TEXT_SECONDARY    = "#7a9ab5"; // metadata, labels

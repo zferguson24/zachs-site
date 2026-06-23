@@ -88,15 +88,25 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
     );
   };
 
-  // Context-menu props attached only to equipped slots
   const contextMenuProps = (slotName: string) => {
     const s = slotMap[slotName];
-    if (!s?.equipped) return {};
+    if (!s?.equipped || !s.item) {
+      return { "aria-label": SLOT_LABELS[slotName] };
+    }
     return {
-      title: "Right-click to unequip",
+      role: "button" as const,
+      tabIndex: 0,
+      "aria-label": `${SLOT_LABELS[slotName]}: ${s.item.name} — press Delete to unequip`,
+      title: "Right-click or Delete to unequip",
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         onUnequipSlot(slotName);
+      },
+      onKeyDown: (e: React.KeyboardEvent) => {
+        if (e.key === "Delete" || e.key === "Backspace") {
+          e.preventDefault();
+          onUnequipSlot(slotName);
+        }
       },
     };
   };

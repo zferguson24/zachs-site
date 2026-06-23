@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
+import { FONT_XS, FONT_SM, RADIUS_MD } from "../styles/tokens";
 
 const slideUp = keyframes`
   from { opacity: 0; transform: translate(-50%, 10px); }
@@ -15,8 +16,9 @@ const Container = styled.div`
   border: 1px solid #7a2020;
   color: #f0aaaa;
   padding: 12px 20px;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: ${RADIUS_MD};
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   max-width: 520px;
   width: max-content;
   text-align: center;
@@ -37,7 +39,7 @@ const Toast: React.FC<ToastProps> = ({ message, onDismiss, duration = 4000 }) =>
     return () => clearTimeout(t);
   }, [message, onDismiss, duration]);
 
-  return <Container onClick={onDismiss}>{message}</Container>;
+  return <Container role="alert" aria-live="assertive" onClick={onDismiss}>{message}</Container>;
 };
 
 export default Toast;

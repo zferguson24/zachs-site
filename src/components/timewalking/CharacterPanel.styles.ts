@@ -3,6 +3,8 @@ import {
   BG_BASE, BG_ELEVATED, BG_SLOT,
   BORDER, BORDER_HOVER, BORDER_SLOT, BORDER_DIVIDER,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ITEM,
+  FONT_XS, FONT_SM, FONT_MD, FONT_LG,
+  RADIUS_MD,
 } from "../../styles/tokens";
 
 const slideInLeft = keyframes`
@@ -19,7 +21,7 @@ const ROW_MS = 50;
 
 export const Panel = styled.div`
   width: 100%;
-  max-width: 760px;
+  max-width: 960px;
   margin-top: 32px;
 `;
 
@@ -31,7 +33,8 @@ export const PanelHead = styled.div`
 `;
 
 export const CharName = styled.span<{ $color: string }>`
-  font-size: 16px;
+  font-size: ${FONT_MD};
+  line-height: ${FONT_LG};
   font-weight: 700;
   color: ${({ $color }) => $color};
   letter-spacing: 0.03em;
@@ -42,7 +45,8 @@ export const CharName = styled.span<{ $color: string }>`
 `;
 
 export const CharMeta = styled.span`
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   color: ${TEXT_SECONDARY};
 `;
 
@@ -63,8 +67,8 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
   flex-direction: ${({ $reversed }) => ($reversed ? "row-reverse" : "row")};
   align-items: center;
   gap: 10px;
-  padding: 5px 8px;
-  border-radius: 5px;
+  padding: 8px 10px;
+  border-radius: ${RADIUS_MD};
   background-color: ${BG_SLOT};
   border: 1px solid ${BORDER_SLOT};
   ${({ $animated, $reversed, $row }) => $animated
@@ -75,22 +79,27 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
       `
     : css`opacity: 1;`
   }
+
+  &:focus-visible {
+    outline: 2px solid ${BORDER_HOVER};
+    outline-offset: 1px;
+  }
 `;
 
 export const WeaponSlotCell = styled(SlotCell)`
-  width: 255px;
+  width: 320px;
 `;
 
 export const IconWrap = styled.div`
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 `;
 
 export const SlotIcon = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: block;
 `;
 
@@ -98,8 +107,8 @@ export const SlotBorder = styled.img`
   position: absolute;
   top: -4px;
   left: -4px;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   pointer-events: none;
 `;
 
@@ -110,18 +119,20 @@ export const SlotText = styled.div<{ $reversed: boolean }>`
 `;
 
 export const SlotItemName = styled.div`
-  font-size: 12px;
+  font-size: ${FONT_SM};
+  line-height: ${FONT_MD};
   font-weight: 600;
   color: ${TEXT_ITEM};
   text-shadow: 0 0 2px rgba(0, 0, 0, 1), 0 1px 4px rgba(0, 0, 0, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 `;
 
 export const SlotLabel = styled.div`
-  font-size: 11px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   color: ${TEXT_DIM};
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -140,9 +151,10 @@ export const UnequipBtn = styled.button`
   padding: 9px;
   background-color: ${BG_BASE};
   border: 1px solid ${BORDER};
-  border-radius: 6px;
+  border-radius: ${RADIUS_MD};
   color: ${TEXT_DIM};
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
 
@@ -155,7 +167,8 @@ export const UnequipBtn = styled.button`
 
 export const LoadingText = styled.div`
   color: ${TEXT_DIM};
-  font-size: 14px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   text-align: center;
   margin-top: 32px;
 `;

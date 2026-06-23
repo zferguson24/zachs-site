@@ -122,7 +122,7 @@ const CharacterList: React.FC = () => {
           const classColor = CLASS_COLORS[char.characterClass] ?? "#e8f0f8";
           return (
             <AnimatedCardWrapper key={char.name} $index={i}>
-              <CharacterCard onClick={() => handleSelect(char.name)}>
+              <CharacterCard type="button" onClick={() => handleSelect(char.name)}>
                 <IconsGroup>
                   <SingleIconWrapper>
                     <RaceClassIcon src={`${ICON_BASE_MEDIUM}${raceSlug}.jpg`} alt={formatEnum(char.race)} />
@@ -146,12 +146,12 @@ const CharacterList: React.FC = () => {
 
         {!loading && !fetchError && !formOpen && (
           addButtonAnimated
-            ? <AddCharacterCard onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard>
-            : <AnimatedCardWrapper $index={characters.length}><AddCharacterCard onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard></AnimatedCardWrapper>
+            ? <AddCharacterCard type="button" onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard>
+            : <AnimatedCardWrapper $index={characters.length}><AddCharacterCard type="button" onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard></AnimatedCardWrapper>
         )}
 
         {!loading && formOpen && (
-          <CreateForm>
+          <CreateForm onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
             <FormRow>
               <FormField style={{ flex: 2 }}>
                 <FormLabel htmlFor="char-name">Name</FormLabel>
@@ -210,7 +210,7 @@ const CharacterList: React.FC = () => {
             {formError && <FormError>{formError}</FormError>}
             <FormActions>
               <CancelButton type="button" onClick={closeForm}>Cancel</CancelButton>
-              <SubmitButton type="button" onClick={handleSubmit} disabled={submitting}>
+              <SubmitButton type="submit" disabled={submitting}>
                 {submitting ? "Creating..." : "Create Character"}
               </SubmitButton>
             </FormActions>

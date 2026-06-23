@@ -104,6 +104,7 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
         <SearchInput
           type="text"
           placeholder="Search gear..."
+          aria-label="Search gear"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoFocus
@@ -126,6 +127,7 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
               return (
                 <AnimatedCardWrapper key={`${item.kind}-${item.name}-${i}`} $index={i}>
                 <ResultCard
+                  as={clickable ? "button" : "div"}
                   $clickable={clickable}
                   onClick={clickable ? () => onEquip(item) : undefined}
                 >

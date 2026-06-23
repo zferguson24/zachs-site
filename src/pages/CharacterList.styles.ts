@@ -3,6 +3,8 @@ import {
   BG_BASE, BG_ELEVATED, BG_HOVER, BG_ACCENT, BG_ACCENT_HOVER,
   BORDER, BORDER_HOVER, BORDER_ACCENT,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ACCENT, TEXT_MUTED_ACTION, TEXT_ERROR,
+  FONT_XS, FONT_SM, FONT_MD, FONT_LG, FONT_2XL,
+  RADIUS_SM, RADIUS_MD,
 } from "../styles/tokens";
 
 export {
@@ -19,7 +21,8 @@ export {
 } from "../components/timewalking/WowIcon.styles";
 
 export const PageTitle = styled.h1`
-  font-size: 22px;
+  font-size: ${FONT_2XL};
+  line-height: 26px;
   font-weight: 700;
   color: ${TEXT_PRIMARY};
   margin: 0 0 6px;
@@ -27,7 +30,8 @@ export const PageTitle = styled.h1`
 `;
 
 export const PageSubtitle = styled.p`
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   color: ${TEXT_SECONDARY};
   margin: 0 0 28px;
 `;
@@ -37,11 +41,14 @@ export const ListArea = styled.div`
   max-width: 760px;
 `;
 
-export const CharacterCard = styled.div`
+export const CharacterCard = styled.button`
+  width: 100%;
+  text-align: left;
+  font-size: inherit;
   padding: 14px 20px;
   background-color: ${BG_ELEVATED};
   border: 1px solid ${BORDER};
-  border-radius: 6px;
+  border-radius: ${RADIUS_MD};
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -51,6 +58,11 @@ export const CharacterCard = styled.div`
   &:hover {
     border-color: ${BORDER_HOVER};
     background-color: ${BG_HOVER};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${BORDER_HOVER};
+    outline-offset: 2px;
   }
 `;
 
@@ -66,7 +78,8 @@ export const CharInfo = styled.div`
 `;
 
 export const CharName = styled.div<{ $color: string }>`
-  font-size: 15px;
+  font-size: ${FONT_MD};
+  line-height: ${FONT_LG};
   font-weight: 700;
   color: ${({ $color }) => $color};
   text-shadow:
@@ -76,43 +89,52 @@ export const CharName = styled.div<{ $color: string }>`
 `;
 
 export const CharMeta = styled.div`
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   color: ${TEXT_SECONDARY};
-  margin-top: 2px;
+  margin-top: 8px;
 `;
 
-export const AddCharacterCard = styled.div`
+export const AddCharacterCard = styled.button`
+  width: 100%;
+  text-align: left;
   padding: 14px 20px;
   min-height: 84px;
   background-color: transparent;
   border: 1px dashed ${BORDER};
-  border-radius: 6px;
+  border-radius: ${RADIUS_MD};
   margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
   color: ${TEXT_DIM};
-  font-size: 14px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   transition: border-color 0.15s, color 0.15s;
 
   &:hover {
     border-color: ${BORDER_HOVER};
     color: ${TEXT_MUTED_ACTION};
   }
+
+  &:focus-visible {
+    outline: 2px solid ${BORDER_HOVER};
+    outline-offset: 2px;
+  }
 `;
 
 export const AddIcon = styled.span`
-  font-size: 22px;
+  font-size: ${FONT_2XL};
   line-height: 1;
   font-weight: 300;
 `;
 
-export const CreateForm = styled.div`
+export const CreateForm = styled.form`
   padding: 16px 20px;
   background-color: ${BG_ELEVATED};
   border: 1px solid ${BORDER};
-  border-radius: 6px;
+  border-radius: ${RADIUS_MD};
   margin-bottom: 8px;
   display: flex;
   flex-direction: column;
@@ -132,7 +154,8 @@ export const FormField = styled.div`
 `;
 
 export const FormLabel = styled.label`
-  font-size: 11px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   font-weight: 600;
   color: ${TEXT_SECONDARY};
   text-transform: uppercase;
@@ -143,10 +166,10 @@ export const FormInput = styled.input`
   height: 36px;
   box-sizing: border-box;
   padding: 0 12px;
-  font-size: 14px;
+  font-size: ${FONT_XS};
   background-color: ${BG_BASE};
   border: 1px solid ${BORDER};
-  border-radius: 4px;
+  border-radius: ${RADIUS_SM};
   color: ${TEXT_PRIMARY};
   outline: none;
 
@@ -158,10 +181,10 @@ export const FormSelect = styled.select`
   height: 36px;
   box-sizing: border-box;
   padding: 0 36px 0 12px;
-  font-size: 14px;
+  font-size: ${FONT_XS};
   background-color: ${BG_BASE};
   border: 1px solid ${BORDER};
-  border-radius: 4px;
+  border-radius: ${RADIUS_SM};
   color: ${TEXT_PRIMARY};
   outline: none;
   cursor: pointer;
@@ -185,9 +208,10 @@ export const FormActions = styled.div`
 
 export const SubmitButton = styled.button`
   padding: 7px 20px;
-  font-size: 13px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   font-weight: 600;
-  border-radius: 4px;
+  border-radius: ${RADIUS_SM};
   border: 1px solid ${BORDER_ACCENT};
   background-color: ${BG_ACCENT};
   color: ${TEXT_ACCENT};
@@ -200,8 +224,9 @@ export const SubmitButton = styled.button`
 
 export const CancelButton = styled.button`
   padding: 7px 16px;
-  font-size: 13px;
-  border-radius: 4px;
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
+  border-radius: ${RADIUS_SM};
   border: 1px solid ${BORDER};
   background-color: transparent;
   color: ${TEXT_SECONDARY};
@@ -211,11 +236,12 @@ export const CancelButton = styled.button`
   &:hover { border-color: ${BORDER_HOVER}; color: ${TEXT_MUTED_ACTION}; }
 `;
 
-export const FormError = styled.div`
-  font-size: 13px;
+export const FormError = styled.div.attrs({ role: "alert" })`
+  font-size: ${FONT_XS};
+  line-height: ${FONT_SM};
   color: ${TEXT_ERROR};
   background-color: rgba(224, 80, 80, 0.1);
   border: 1px solid rgba(224, 80, 80, 0.25);
-  border-radius: 4px;
+  border-radius: ${RADIUS_SM};
   padding: 7px 12px;
 `;
