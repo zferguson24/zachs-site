@@ -15,6 +15,9 @@ export const BORDER_ACCENT   = "#4a7a9b"; // primary action button border
 export const BORDER_NAV      = "#3a6ca0"; // landing nav button
 export const BORDER_NAV_HOVER = "#6aaef5";
 
+// Breakpoints
+export const BREAKPOINT_MOBILE = "640px";
+
 // Border radii
 export const RADIUS_SM  = "4px";   // form controls, badges, small buttons
 export const RADIUS_MD  = "6px";   // cards, panels, containers

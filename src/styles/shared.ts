@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { BG_BASE, BORDER, BORDER_HOVER, TEXT_PRIMARY, TEXT_DIM, FONT_XS, FONT_SM } from "./tokens";
+import { BG_BASE, BORDER, BORDER_HOVER, TEXT_PRIMARY, TEXT_DIM, FONT_XS, FONT_SM, BREAKPOINT_MOBILE } from "./tokens";
 
 export const fadeSlideUp = keyframes`
   from { opacity: 0; transform: translateY(8px); }
@@ -41,5 +41,9 @@ export const Page = styled.main`
   align-items: center;
   padding: 48px 24px 72px;
   color: ${TEXT_PRIMARY};
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    padding: 24px 12px 48px;
+  }
 `;
 

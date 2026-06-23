@@ -4,7 +4,7 @@ import {
   BORDER, BORDER_HOVER, BORDER_SLOT, BORDER_DIVIDER,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ITEM,
   FONT_XS, FONT_SM, FONT_MD, FONT_LG,
-  RADIUS_MD,
+  RADIUS_MD, BREAKPOINT_MOBILE,
 } from "../../styles/tokens";
 
 const slideInLeft = keyframes`
@@ -15,6 +15,12 @@ const slideInLeft = keyframes`
 const slideInRight = keyframes`
   from { opacity: 0; transform: translateX(24px); }
   to   { opacity: 1; transform: translateX(0); }
+`;
+
+const holdFill = keyframes`
+  0%   { clip-path: circle(0%   at var(--hold-x, 50%) var(--hold-y, 50%)); }
+  80%  { clip-path: circle(32%  at var(--hold-x, 50%) var(--hold-y, 50%)); }
+  100% { clip-path: circle(150% at var(--hold-x, 50%) var(--hold-y, 50%)); }
 `;
 
 const ROW_MS = 50;
@@ -60,9 +66,14 @@ export const SlotGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    grid-template-columns: 1fr;
+  }
 `;
 
-export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated: boolean }>`
+export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated: boolean; $mobileOrder: number }>`
+  position: relative;
   display: flex;
   flex-direction: ${({ $reversed }) => ($reversed ? "row-reverse" : "row")};
   align-items: center;
@@ -84,10 +95,20 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
     outline: 2px solid ${BORDER_HOVER};
     outline-offset: 1px;
   }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex-direction: row;
+    order: ${({ $mobileOrder }) => $mobileOrder};
+    user-select: none;
+  }
 `;
 
 export const WeaponSlotCell = styled(SlotCell)`
   width: 320px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    width: auto;
+  }
 `;
 
 export const IconWrap = styled.div`
@@ -116,6 +137,10 @@ export const SlotText = styled.div<{ $reversed: boolean }>`
   min-width: 0;
   flex: 1;
   text-align: ${({ $reversed }) => ($reversed ? "right" : "left")};
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    text-align: left;
+  }
 `;
 
 export const SlotItemName = styled.div`
@@ -143,6 +168,11 @@ export const WeaponRowWrap = styled.div`
   justify-content: center;
   gap: 5px;
   margin-top: 5px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 export const UnequipBtn = styled.button`
@@ -171,4 +201,19 @@ export const LoadingText = styled.div`
   line-height: ${FONT_SM};
   text-align: center;
   margin-top: 32px;
+`;
+
+export const HoldOverlay = styled.div<{ $active: boolean }>`
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+  background: rgba(30, 35, 42, 0.90);
+  clip-path: circle(0% at var(--hold-x, 50%) var(--hold-y, 50%));
+  ${({ $active }) => $active
+    ? css`animation: ${holdFill} 1s linear forwards;`
+    : css`animation: none;`
+  }
 `;

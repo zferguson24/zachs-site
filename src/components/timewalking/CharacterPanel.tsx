@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   Panel, PanelHead, CharName, CharMeta, PanelDivider,
   SlotGrid, SlotCell, WeaponSlotCell, IconWrap, SlotIcon, SlotBorder,
   SlotText, SlotItemName, SlotLabel, WeaponRowWrap, UnequipBtn, LoadingText,
+  HoldOverlay,
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
 import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/wow";
@@ -29,10 +30,16 @@ const SLOT_PLACEHOLDERS: Record<string, string> = {
 };
 
 // Interleaved left+right columns so CSS grid fills left-col, right-col per row
-const LEFT_COL = ["HEAD", "NECK", "SHOULDERS", "BACK", "CHEST", "WRIST", "HANDS"];
+const LEFT_COL  = ["HEAD", "NECK", "SHOULDERS", "BACK", "CHEST", "WRIST", "HANDS"];
 const RIGHT_COL = ["WAIST", "LEGS", "FEET", "FINGER_1", "FINGER_2", "TRINKET_1", "TRINKET_2"];
 const GRID_SLOTS = LEFT_COL.flatMap((l, i) => [l, RIGHT_COL[i]]);
 const WEAPON_ROW = ["MAIN_HAND", "OFF_HAND"];
+
+// On mobile (single column), left-col slots come first (order 1-7), then right-col (8-14).
+// GRID_SLOTS interleaves them: even indices = left col, odd indices = right col.
+function mobileSlotOrder(i: number): number {
+  return i % 2 === 0 ? i / 2 + 1 : (i - 1) / 2 + 8;
+}
 
 interface CharacterPanelProps {
   character: CharacterData | null;
@@ -56,13 +63,18 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
   onUnequipAll,
   onUnequipSlot,
 }) => {
-  const hasAnimated = useRef(false);
+  const hasAnimated   = useRef(false);
+  const holdTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [holdingSlot, setHoldingSlot] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && character) {
-      hasAnimated.current = true;
-    }
+    if (!loading && character) hasAnimated.current = true;
   }, [loading, character]);
+
+  // Clean up any pending hold timer on unmount
+  useEffect(() => {
+    return () => { if (holdTimerRef.current) clearTimeout(holdTimerRef.current); };
+  }, []);
 
   if (loading) return <Panel><LoadingText>Loading character…</LoadingText></Panel>;
   if (!character) return null;
@@ -71,7 +83,12 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
   const slotMap: Record<string, SlotState> = {};
   for (const s of character.equipment) slotMap[s.slot] = s;
 
-  // Shared inner content for any slot cell
+  const clearHold = () => {
+    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    holdTimerRef.current = null;
+    setHoldingSlot(null);
+  };
+
   const renderSlotContent = (slotName: string, reversed: boolean) => {
     const s = slotMap[slotName];
     return (
@@ -96,8 +113,8 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
     return {
       role: "button" as const,
       tabIndex: 0,
-      "aria-label": `${SLOT_LABELS[slotName]}: ${s.item.name} — press Delete to unequip`,
-      title: "Right-click or Delete to unequip",
+      "aria-label": `${SLOT_LABELS[slotName]}: ${s.item.name} — press Delete or hold to unequip`,
+      title: "Right-click, Delete, or hold to unequip",
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         onUnequipSlot(slotName);
@@ -108,13 +125,31 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
           onUnequipSlot(slotName);
         }
       },
+      onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+        if (e.pointerType !== "touch") return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + "%";
+        const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + "%";
+        e.currentTarget.style.setProperty("--hold-x", x);
+        e.currentTarget.style.setProperty("--hold-y", y);
+        setHoldingSlot(slotName);
+        holdTimerRef.current = setTimeout(() => {
+          onUnequipSlot(slotName);
+          setHoldingSlot(null);
+        }, 1000);
+      },
+      onPointerUp:     clearHold,
+      onPointerCancel: clearHold,
+      onPointerLeave:  clearHold,
     };
   };
 
   return (
     <Panel>
       <PanelHead>
-        <CharName $color={CLASS_COLORS[character.characterClass] ?? "#e8f0f8"}>{character.name}</CharName>
+        <CharName $color={CLASS_COLORS[character.characterClass] ?? "#e8f0f8"}>
+          {character.name}
+        </CharName>
         <CharMeta>
           {formatEnum(character.characterClass)} · {formatEnum(character.race)}
         </CharMeta>
@@ -126,7 +161,15 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
           const reversed = i % 2 === 1;
           const row = Math.floor(i / 2);
           return (
-            <SlotCell key={slot} $reversed={reversed} $row={row} $animated={animated} {...contextMenuProps(slot)}>
+            <SlotCell
+              key={slot}
+              $reversed={reversed}
+              $row={row}
+              $animated={animated}
+              $mobileOrder={mobileSlotOrder(i)}
+              {...contextMenuProps(slot)}
+            >
+              <HoldOverlay $active={holdingSlot === slot} />
               {renderSlotContent(slot, reversed)}
             </SlotCell>
           );
@@ -136,12 +179,27 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       <WeaponRowWrap>
         {slotMap["MAIN_HAND"]?.item?.weaponSlot === "2H" ||
         slotMap["MAIN_HAND"]?.item?.weaponSlot === "Ranged" ? (
-          <WeaponSlotCell $reversed={false} $row={LEFT_COL.length} $animated={animated} {...contextMenuProps("MAIN_HAND")}>
+          <WeaponSlotCell
+            $reversed={false}
+            $row={LEFT_COL.length}
+            $animated={animated}
+            $mobileOrder={0}
+            {...contextMenuProps("MAIN_HAND")}
+          >
+            <HoldOverlay $active={holdingSlot === "MAIN_HAND"} />
             {renderSlotContent("MAIN_HAND", false)}
           </WeaponSlotCell>
         ) : (
           WEAPON_ROW.map((slot, i) => (
-            <WeaponSlotCell key={slot} $reversed={i === 1} $row={LEFT_COL.length} $animated={animated} {...contextMenuProps(slot)}>
+            <WeaponSlotCell
+              key={slot}
+              $reversed={i === 1}
+              $row={LEFT_COL.length}
+              $animated={animated}
+              $mobileOrder={0}
+              {...contextMenuProps(slot)}
+            >
+              <HoldOverlay $active={holdingSlot === slot} />
               {renderSlotContent(slot, i === 1)}
             </WeaponSlotCell>
           ))

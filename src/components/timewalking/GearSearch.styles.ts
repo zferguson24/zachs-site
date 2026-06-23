@@ -4,7 +4,7 @@ import {
   BORDER, BORDER_HOVER,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_BRIGHT, TEXT_ITEM, TEXT_MUTED_ACTION,
   FONT_XS, FONT_SM, FONT_MD,
-  RADIUS_SM, RADIUS_MD,
+  RADIUS_SM, RADIUS_MD, BREAKPOINT_MOBILE,
 } from "../../styles/tokens";
 
 export {
@@ -129,6 +129,11 @@ export const MetaRow = styled.div`
   justify-content: space-between;
   gap: 8px;
   margin-top: 10px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 export const ResultMeta = styled.div`
@@ -156,6 +161,10 @@ export const SlotButtonRow = styled.div`
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    width: 100%;
+  }
 `;
 
 export const SlotButton = styled.button`
@@ -174,5 +183,10 @@ export const SlotButton = styled.button`
     border-color: ${BORDER_HOVER};
     color: ${TEXT_PRIMARY};
     background-color: ${BG_ELEVATED};
+  }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex: 1;
+    padding: 8px 14px;
   }
 `;

@@ -4,7 +4,7 @@ import {
   BORDER, BORDER_HOVER, BORDER_ACCENT,
   TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ACCENT, TEXT_MUTED_ACTION, TEXT_ERROR,
   FONT_XS, FONT_SM, FONT_MD, FONT_LG, FONT_2XL,
-  RADIUS_SM, RADIUS_MD,
+  RADIUS_SM, RADIUS_MD, BREAKPOINT_MOBILE,
 } from "../styles/tokens";
 
 export {
@@ -41,7 +41,22 @@ export const ListArea = styled.div`
   max-width: 760px;
 `;
 
+export const ChevronIndicator = styled.span`
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-40px);
+  opacity: 0;
+  font-size: 2rem;
+  line-height: 1;
+  color: ${TEXT_DIM};
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+`;
+
 export const CharacterCard = styled.button`
+  position: relative;
   width: 100%;
   text-align: left;
   font-size: inherit;
@@ -58,6 +73,11 @@ export const CharacterCard = styled.button`
   &:hover {
     border-color: ${BORDER_HOVER};
     background-color: ${BG_HOVER};
+  }
+
+  &:hover ${ChevronIndicator} {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
   }
 
   &:focus-visible {
@@ -144,6 +164,10 @@ export const CreateForm = styled.form`
 export const FormRow = styled.div`
   display: flex;
   gap: 12px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex-direction: column;
+  }
 `;
 
 export const FormField = styled.div`
@@ -175,6 +199,10 @@ export const FormInput = styled.input`
 
   &::placeholder { color: ${TEXT_DIM}; }
   &:focus { border-color: ${BORDER_HOVER}; }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    height: 44px;
+  }
 `;
 
 export const FormSelect = styled.select`
@@ -198,12 +226,20 @@ export const FormSelect = styled.select`
   &:disabled { opacity: 0.5; cursor: default; }
 
   option { background-color: ${BG_BASE}; }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    height: 44px;
+  }
 `;
 
 export const FormActions = styled.div`
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    justify-content: stretch;
+  }
 `;
 
 export const SubmitButton = styled.button`
@@ -220,6 +256,11 @@ export const SubmitButton = styled.button`
 
   &:hover:not(:disabled) { border-color: ${BORDER_HOVER}; background-color: ${BG_ACCENT_HOVER}; }
   &:disabled { opacity: 0.5; cursor: default; }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex: 1;
+    padding: 11px 20px;
+  }
 `;
 
 export const CancelButton = styled.button`
@@ -234,6 +275,11 @@ export const CancelButton = styled.button`
   transition: border-color 0.15s, color 0.15s;
 
   &:hover { border-color: ${BORDER_HOVER}; color: ${TEXT_MUTED_ACTION}; }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex: 1;
+    padding: 11px 16px;
+  }
 `;
 
 export const FormError = styled.div.attrs({ role: "alert" })`

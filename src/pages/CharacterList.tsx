@@ -5,7 +5,7 @@ import { ROUTES } from "../constants/routes";
 import { ICON_BASE_MEDIUM, ICON_BORDER_URL } from "../constants/wow";
 import { ALL_CLASSES, VALID_RACES_BY_CLASS, CLASS_ICON_SLUGS, CLASS_COLORS, getRaceIconSlug } from "../constants/wow";
 import {
-  Page, PageTitle, PageSubtitle, ListArea, CharacterCard,
+  Page, PageTitle, PageSubtitle, ListArea, CharacterCard, ChevronIndicator,
   IconsGroup, SingleIconWrapper, RaceClassIcon, RaceClassIconBorder,
   CharInfo, CharName, CharMeta,
   Spinner, EmptyMessage, AnimatedCardWrapper,
@@ -139,6 +139,7 @@ const CharacterList: React.FC = () => {
                     {formatEnum(char.characterClass)} · {formatEnum(char.race)}
                   </CharMeta>
                 </CharInfo>
+                <ChevronIndicator aria-hidden="true">❯</ChevronIndicator>
               </CharacterCard>
             </AnimatedCardWrapper>
           );
