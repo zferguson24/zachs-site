@@ -1,23 +1,27 @@
 import styled from "styled-components";
 import {
-  BG_BASE, BG_ELEVATED, BG_HOVER,
-  BORDER, BORDER_HOVER,
-  TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_BRIGHT, TEXT_ITEM, TEXT_MUTED_ACTION,
-  FONT_XS, FONT_SM, FONT_MD,
-  RADIUS_SM, RADIUS_MD, BREAKPOINT_MOBILE,
+  BG_BASE,
+  BG_ELEVATED,
+  BG_HOVER,
+  BORDER,
+  BORDER_HOVER,
+  TEXT_PRIMARY,
+  TEXT_SECONDARY,
+  TEXT_DIM,
+  TEXT_BRIGHT,
+  TEXT_ITEM,
+  TEXT_MUTED_ACTION,
+  FONT_XS,
+  FONT_SM,
+  FONT_MD,
+  RADIUS_SM,
+  RADIUS_MD,
+  BREAKPOINT_MOBILE,
 } from "../../styles/tokens";
 
-export {
-  Spinner,
-  EmptyMessage,
-  AnimatedCardWrapper,
-} from "../../styles/shared";
+export { Spinner, EmptyMessage, AnimatedCardWrapper } from "../../styles/shared";
 
-export {
-  IconWrapper,
-  IconImg    as ItemIconImg,
-  IconBorder,
-} from "./WowIcon.styles";
+export { IconWrapper, IconImg as ItemIconImg, IconBorder } from "./WowIcon.styles";
 
 export const SearchWrapper = styled.div`
   width: 100%;
@@ -35,8 +39,12 @@ export const SearchInput = styled.input`
   color: ${TEXT_PRIMARY};
   outline: none;
 
-  &::placeholder { color: ${TEXT_DIM}; }
-  &:focus { border-color: ${BORDER_HOVER}; }
+  &::placeholder {
+    color: ${TEXT_DIM};
+  }
+  &:focus {
+    border-color: ${BORDER_HOVER};
+  }
 `;
 
 export const ResultsArea = styled.div`
@@ -51,9 +59,16 @@ export const ResultsScroller = styled.div<{ $capped: boolean }>`
   padding-right: ${({ $capped }) => ($capped ? "4px" : "0")};
   scrollbar-width: thin;
   scrollbar-color: ${BORDER} transparent;
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background-color: ${BORDER}; border-radius: ${RADIUS_SM}; }
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${BORDER};
+    border-radius: ${RADIUS_SM};
+  }
 `;
 
 export const ResultCard = styled.div<{ $clickable: boolean }>`
@@ -177,7 +192,10 @@ export const SlotButton = styled.button`
   background-color: ${BG_BASE};
   color: ${TEXT_MUTED_ACTION};
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s;
 
   &:hover {
     border-color: ${BORDER_HOVER};

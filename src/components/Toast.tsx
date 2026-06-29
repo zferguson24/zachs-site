@@ -39,7 +39,11 @@ const Toast: React.FC<ToastProps> = ({ message, onDismiss, duration = 4000 }) =>
     return () => clearTimeout(t);
   }, [message, onDismiss, duration]);
 
-  return <Container role="alert" aria-live="assertive" onClick={onDismiss}>{message}</Container>;
+  return (
+    <Container role="alert" aria-live="assertive" onClick={onDismiss}>
+      {message}
+    </Container>
+  );
 };
 
 export default Toast;

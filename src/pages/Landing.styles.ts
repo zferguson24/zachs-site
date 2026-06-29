@@ -1,5 +1,15 @@
 import styled from "styled-components";
-import { BG_BASE, TEXT_PRIMARY, TEXT_NAV, BORDER_NAV, BORDER_NAV_HOVER, FONT_SM, FONT_MD, FONT_LG, RADIUS_LG } from "../styles/tokens";
+import {
+  BG_BASE,
+  TEXT_PRIMARY,
+  TEXT_NAV,
+  BORDER_NAV,
+  BORDER_NAV_HOVER,
+  FONT_SM,
+  FONT_MD,
+  FONT_LG,
+  RADIUS_LG,
+} from "../styles/tokens";
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -30,7 +40,10 @@ export const NavButton = styled.button`
   cursor: pointer;
   letter-spacing: 0.5px;
   text-align: left;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     color 0.2s ease;
 
   &:hover {

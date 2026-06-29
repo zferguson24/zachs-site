@@ -1,10 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  SearchWrapper, SearchInput, ResultsArea, Spinner, ResultsScroller,
-  ResultCard, CardRow, IconWrapper, ItemIconImg, IconBorder,
-  ResultContent, ResultHeader, ResultName, TypeBadge,
-  MetaRow, ResultMeta, MetaItem, MetaExpansion, MetaStats,
-  EmptyMessage, SlotButtonRow, SlotButton, AnimatedCardWrapper,
+  SearchWrapper,
+  SearchInput,
+  ResultsArea,
+  Spinner,
+  ResultsScroller,
+  ResultCard,
+  CardRow,
+  IconWrapper,
+  ItemIconImg,
+  IconBorder,
+  ResultContent,
+  ResultHeader,
+  ResultName,
+  TypeBadge,
+  MetaRow,
+  ResultMeta,
+  MetaItem,
+  MetaExpansion,
+  MetaStats,
+  EmptyMessage,
+  SlotButtonRow,
+  SlotButton,
+  AnimatedCardWrapper,
 } from "./GearSearch.styles";
 import { GearSearchResultDTO, GearResult } from "../../types/timewalking";
 import { ICON_BORDER_URL } from "../../constants/wow";
@@ -55,12 +73,14 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
   const [results, setResults] = useState<GearResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  // Incremented on each completed search so result cards remount and re-animate
+  // Incremented on each completed search; passed as `key` to ResultsScroller so cards remount and re-animate.
   const [searchVersion, setSearchVersion] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
 
     if (query.length < MIN_LENGTH) {
       setResults([]);
@@ -82,6 +102,8 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
       }
 
       const data: GearSearchResultDTO = await res.json();
+      // Backend returns separate armorPieces and weapons arrays; merge into one list
+      // tagged with `kind` so downstream components can branch on armor vs weapon logic.
       const merged: GearResult[] = [
         ...data.armorPieces.map((a) => ({ kind: "armor" as const, ...a })),
         ...data.weapons.map((w) => ({ kind: "weapon" as const, ...w })),
@@ -94,7 +116,9 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
     }, DEBOUNCE_MS);
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
   }, [query]);
 
@@ -114,72 +138,72 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
       <ResultsArea>
         {loading && <Spinner />}
 
-        {!loading && searched && results.length === 0 && (
-          <EmptyMessage>No gear found for "{query}"</EmptyMessage>
-        )}
+        {!loading && searched && results.length === 0 && <EmptyMessage>No gear found for "{query}"</EmptyMessage>}
 
         {!loading && results.length > 0 && (
           <ResultsScroller key={searchVersion} $capped={results.length >= 4}>
             {results.map((item, i) => {
               const slotOptions = getSlotOptions(item);
+              // When slot choice is ambiguous (1H, ring, trinket), render per-slot buttons instead
+              // of making the whole card clickable. Unambiguous items equip on card click.
               const clickable = slotOptions === null;
 
               return (
                 <AnimatedCardWrapper key={`${item.kind}-${item.name}-${i}`} $index={i}>
-                <ResultCard
-                  as={clickable ? "button" : "div"}
-                  $clickable={clickable}
-                  onClick={clickable ? () => onEquip(item) : undefined}
-                >
-                  <CardRow>
-                    {item.iconUrl && (
-                      <IconWrapper>
-                        <ItemIconImg src={item.iconUrl} alt={item.name} />
-                        <IconBorder src={ICON_BORDER_URL} alt="" />
-                      </IconWrapper>
-                    )}
-                    <ResultContent>
-                      <ResultHeader>
-                        <ResultName>{item.name}</ResultName>
-                        <TypeBadge $isWeapon={item.kind === "weapon"}>
-                          {item.kind === "weapon" ? "Weapon" : "Armor"}
-                        </TypeBadge>
-                      </ResultHeader>
-                      <MetaRow>
-                        <ResultMeta>
-                          <MetaExpansion>{item.expansion}</MetaExpansion>
-                          <MetaItem>
-                            {item.kind === "armor"
-                              ? item.armorType === "Agnostic"
-                                ? item.slot
-                                : `${item.armorType} · ${item.slot}`
-                              : `${item.weaponType} · ${item.weaponSlot}`}
-                          </MetaItem>
-                          {(item.primaryStat || item.secondaryStat) && (
-                            <MetaStats>
-                              {[item.primaryStat, item.secondaryStat].filter(Boolean).join(" + ")}
-                            </MetaStats>
+                  <ResultCard
+                    as={clickable ? "button" : "div"}
+                    $clickable={clickable}
+                    onClick={clickable ? () => onEquip(item) : undefined}
+                  >
+                    <CardRow>
+                      {item.iconUrl && (
+                        <IconWrapper>
+                          <ItemIconImg src={item.iconUrl} alt={item.name} />
+                          <IconBorder src={ICON_BORDER_URL} alt="" />
+                        </IconWrapper>
+                      )}
+                      <ResultContent>
+                        <ResultHeader>
+                          <ResultName>{item.name}</ResultName>
+                          <TypeBadge $isWeapon={item.kind === "weapon"}>
+                            {item.kind === "weapon" ? "Weapon" : "Armor"}
+                          </TypeBadge>
+                        </ResultHeader>
+                        <MetaRow>
+                          <ResultMeta>
+                            <MetaExpansion>{item.expansion}</MetaExpansion>
+                            <MetaItem>
+                              {item.kind === "armor"
+                                ? item.armorType === "Agnostic"
+                                  ? item.slot
+                                  : `${item.armorType} · ${item.slot}`
+                                : `${item.weaponType} · ${item.weaponSlot}`}
+                            </MetaItem>
+                            {(item.primaryStat || item.secondaryStat) && (
+                              <MetaStats>
+                                {[item.primaryStat, item.secondaryStat].filter(Boolean).join(" + ")}
+                              </MetaStats>
+                            )}
+                          </ResultMeta>
+                          {slotOptions && (
+                            <SlotButtonRow>
+                              {slotOptions.map((opt) => (
+                                <SlotButton
+                                  key={opt.value}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEquip(item, opt.value);
+                                  }}
+                                >
+                                  {opt.label}
+                                </SlotButton>
+                              ))}
+                            </SlotButtonRow>
                           )}
-                        </ResultMeta>
-                        {slotOptions && (
-                          <SlotButtonRow>
-                            {slotOptions.map((opt) => (
-                              <SlotButton
-                                key={opt.value}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onEquip(item, opt.value);
-                                }}
-                              >
-                                {opt.label}
-                              </SlotButton>
-                            ))}
-                          </SlotButtonRow>
-                        )}
-                      </MetaRow>
-                    </ResultContent>
-                  </CardRow>
-                </ResultCard>
+                        </MetaRow>
+                      </ResultContent>
+                    </CardRow>
+                  </ResultCard>
                 </AnimatedCardWrapper>
               );
             })}

@@ -46,4 +46,3 @@ export const Page = styled.main`
     padding: 24px 12px 48px;
   }
 `;
-

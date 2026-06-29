@@ -9,13 +9,7 @@ interface NumberLineProps {
   setAttribute: (index: number, value: number) => void;
 }
 
-const NumberLine: React.FC<NumberLineProps> = ({
-  ticks,
-  index,
-  leftLabel,
-  rightLabel,
-  setAttribute,
-}) => {
+const NumberLine: React.FC<NumberLineProps> = ({ ticks, index, leftLabel, rightLabel, setAttribute }) => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(0);
   const [direction, setDirection] = useState<"right" | "left">("right");

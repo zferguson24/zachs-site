@@ -1,10 +1,22 @@
 import styled, { keyframes, css } from "styled-components";
 import {
-  BG_BASE, BG_ELEVATED, BG_SLOT,
-  BORDER, BORDER_HOVER, BORDER_SLOT, BORDER_DIVIDER,
-  TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ITEM,
-  FONT_XS, FONT_SM, FONT_MD, FONT_LG,
-  RADIUS_MD, BREAKPOINT_MOBILE,
+  BG_BASE,
+  BG_ELEVATED,
+  BG_SLOT,
+  BORDER,
+  BORDER_HOVER,
+  BORDER_SLOT,
+  BORDER_DIVIDER,
+  TEXT_PRIMARY,
+  TEXT_SECONDARY,
+  TEXT_DIM,
+  TEXT_ITEM,
+  FONT_XS,
+  FONT_SM,
+  FONT_MD,
+  FONT_LG,
+  RADIUS_MD,
+  BREAKPOINT_MOBILE,
 } from "../../styles/tokens";
 
 const slideInLeft = keyframes`
@@ -87,18 +99,20 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
   border-radius: ${RADIUS_MD};
   background-color: ${BG_SLOT};
   border: 1px solid ${BORDER_SLOT};
-  ${({ $animated, $reversed, $row, $mobileOrder }) => $animated
-    ? css`
-        opacity: 0;
-        animation: ${$reversed ? slideInRight : slideInLeft} ${ROW_MS}ms ease both;
-        animation-delay: ${$row * ROW_MS}ms;
-        @media (max-width: ${BREAKPOINT_MOBILE}) {
-          animation: ${slideUp} ${ROW_MS}ms ease both;
-          animation-delay: ${($mobileOrder - 1) * ROW_MS}ms;
-        }
-      `
-    : css`opacity: 1;`
-  }
+  ${({ $animated, $reversed, $row, $mobileOrder }) =>
+    $animated
+      ? css`
+          opacity: 0;
+          animation: ${$reversed ? slideInRight : slideInLeft} ${ROW_MS}ms ease both;
+          animation-delay: ${$row * ROW_MS}ms;
+          @media (max-width: ${BREAKPOINT_MOBILE}) {
+            animation: ${slideUp} ${ROW_MS}ms ease both;
+            animation-delay: ${($mobileOrder - 1) * ROW_MS}ms;
+          }
+        `
+      : css`
+          opacity: 1;
+        `}
 
   &:focus-visible {
     outline: 2px solid ${BORDER_HOVER};
@@ -157,7 +171,9 @@ export const SlotItemName = styled.div`
   line-height: ${FONT_MD};
   font-weight: 600;
   color: ${TEXT_ITEM};
-  text-shadow: 0 0 2px rgba(0, 0, 0, 1), 0 1px 4px rgba(0, 0, 0, 0.9);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 1px 4px rgba(0, 0, 0, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -195,7 +211,10 @@ export const UnequipBtn = styled.button`
   font-size: ${FONT_XS};
   line-height: ${FONT_SM};
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s;
 
   &:hover {
     border-color: ${BORDER_HOVER};
@@ -219,10 +238,14 @@ export const HoldOverlay = styled.div<{ $active: boolean }>`
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
-  background: rgba(30, 35, 42, 0.90);
+  background: rgba(30, 35, 42, 0.9);
   clip-path: circle(0% at var(--hold-x, 50%) var(--hold-y, 50%));
-  ${({ $active }) => $active
-    ? css`animation: ${holdFill} 1s linear forwards;`
-    : css`animation: none;`
-  }
+  ${({ $active }) =>
+    $active
+      ? css`
+          animation: ${holdFill} 1s linear forwards;
+        `
+      : css`
+          animation: none;
+        `}
 `;

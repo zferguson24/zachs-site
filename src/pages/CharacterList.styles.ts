@@ -1,22 +1,34 @@
 import styled from "styled-components";
 import {
-  BG_BASE, BG_ELEVATED, BG_HOVER, BG_ACCENT, BG_ACCENT_HOVER,
-  BORDER, BORDER_HOVER, BORDER_ACCENT,
-  TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DIM, TEXT_ACCENT, TEXT_MUTED_ACTION, TEXT_ERROR,
-  FONT_XS, FONT_SM, FONT_MD, FONT_LG, FONT_2XL,
-  RADIUS_SM, RADIUS_MD, BREAKPOINT_MOBILE,
+  BG_BASE,
+  BG_ELEVATED,
+  BG_HOVER,
+  BG_ACCENT,
+  BG_ACCENT_HOVER,
+  BORDER,
+  BORDER_HOVER,
+  BORDER_ACCENT,
+  TEXT_PRIMARY,
+  TEXT_SECONDARY,
+  TEXT_DIM,
+  TEXT_ACCENT,
+  TEXT_MUTED_ACTION,
+  TEXT_ERROR,
+  FONT_XS,
+  FONT_SM,
+  FONT_MD,
+  FONT_LG,
+  FONT_2XL,
+  RADIUS_SM,
+  RADIUS_MD,
+  BREAKPOINT_MOBILE,
 } from "../styles/tokens";
 
-export {
-  Page,
-  Spinner,
-  EmptyMessage,
-  AnimatedCardWrapper,
-} from "../styles/shared";
+export { Page, Spinner, EmptyMessage, AnimatedCardWrapper } from "../styles/shared";
 
 export {
   IconWrapper as SingleIconWrapper,
-  IconImg    as RaceClassIcon,
+  IconImg as RaceClassIcon,
   IconBorder as RaceClassIconBorder,
 } from "../components/timewalking/WowIcon.styles";
 
@@ -52,7 +64,9 @@ export const ChevronIndicator = styled.span`
   color: ${TEXT_DIM};
   pointer-events: none;
   user-select: none;
-  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  transition:
+    opacity 0.18s ease-out,
+    transform 0.18s ease-out;
 `;
 
 export const CharacterCard = styled.button`
@@ -131,7 +145,9 @@ export const AddCharacterCard = styled.button`
   color: ${TEXT_DIM};
   font-size: ${FONT_XS};
   line-height: ${FONT_SM};
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 
   &:hover {
     border-color: ${BORDER_HOVER};
@@ -197,8 +213,12 @@ export const FormInput = styled.input`
   color: ${TEXT_PRIMARY};
   outline: none;
 
-  &::placeholder { color: ${TEXT_DIM}; }
-  &:focus { border-color: ${BORDER_HOVER}; }
+  &::placeholder {
+    color: ${TEXT_DIM};
+  }
+  &:focus {
+    border-color: ${BORDER_HOVER};
+  }
 
   @media (max-width: ${BREAKPOINT_MOBILE}) {
     height: 44px;
@@ -223,10 +243,17 @@ export const FormSelect = styled.select`
   background-repeat: no-repeat;
   background-position: right 12px center;
 
-  &:focus { border-color: ${BORDER_HOVER}; }
-  &:disabled { opacity: 0.5; cursor: default; }
+  &:focus {
+    border-color: ${BORDER_HOVER};
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 
-  option { background-color: ${BG_BASE}; }
+  option {
+    background-color: ${BG_BASE};
+  }
 
   @media (max-width: ${BREAKPOINT_MOBILE}) {
     height: 44px;
@@ -253,10 +280,18 @@ export const SubmitButton = styled.button`
   background-color: ${BG_ACCENT};
   color: ${TEXT_ACCENT};
   cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
 
-  &:hover:not(:disabled) { border-color: ${BORDER_HOVER}; background-color: ${BG_ACCENT_HOVER}; }
-  &:disabled { opacity: 0.5; cursor: default; }
+  &:hover:not(:disabled) {
+    border-color: ${BORDER_HOVER};
+    background-color: ${BG_ACCENT_HOVER};
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 
   @media (max-width: ${BREAKPOINT_MOBILE}) {
     flex: 1;
@@ -273,9 +308,14 @@ export const CancelButton = styled.button`
   background-color: transparent;
   color: ${TEXT_SECONDARY};
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 
-  &:hover { border-color: ${BORDER_HOVER}; color: ${TEXT_MUTED_ACTION}; }
+  &:hover {
+    border-color: ${BORDER_HOVER};
+    color: ${TEXT_MUTED_ACTION};
+  }
 
   @media (max-width: ${BREAKPOINT_MOBILE}) {
     flex: 1;
