@@ -20,5 +20,7 @@ export const BackButton = styled.button`
   transition: color 0.15s;
   text-align: left;
 
-  &:hover { color: ${TEXT_PRIMARY}; }
+  &:hover {
+    color: ${TEXT_PRIMARY};
+  }
 `;

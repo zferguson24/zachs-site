@@ -2,23 +2,49 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CharacterSummaryDTO } from "../types/timewalking";
 import { ROUTES } from "../constants/routes";
-import { ICON_BASE_MEDIUM, ICON_BORDER_URL } from "../constants/wow";
-import { ALL_CLASSES, VALID_RACES_BY_CLASS, CLASS_ICON_SLUGS, CLASS_COLORS, getRaceIconSlug } from "../constants/wow";
+import { ICON_BASE, ICON_BORDER_URL } from "../constants/wow";
+import { ALL_CLASSES, CLASS_ICON_SLUGS, CLASS_COLORS, getRaceIconSlug } from "../constants/wow";
 import {
-  Page, PageTitle, PageSubtitle, ListArea, CharacterCard, ChevronIndicator,
-  IconsGroup, SingleIconWrapper, RaceClassIcon, RaceClassIconBorder,
-  CharInfo, CharName, CharMeta,
-  Spinner, EmptyMessage, AnimatedCardWrapper,
-  AddCharacterCard, AddIcon, CreateForm, FormRow, FormField, FormLabel,
-  FormInput, FormSelect, FormActions, SubmitButton, CancelButton, FormError,
+  Page,
+  PageTitle,
+  PageSubtitle,
+  ListArea,
+  CharacterCard,
+  ChevronIndicator,
+  IconsGroup,
+  SingleIconWrapper,
+  RaceClassIcon,
+  RaceClassIconBorder,
+  CharInfo,
+  CharName,
+  CharMeta,
+  Spinner,
+  EmptyMessage,
+  AnimatedCardWrapper,
+  AddCharacterCard,
+  AddIcon,
+  CreateForm,
+  FormRow,
+  FormField,
+  FormLabel,
+  FormInput,
+  FormSelect,
+  FormActions,
+  SubmitButton,
+  CancelButton,
+  FormError,
 } from "./CharacterList.styles";
 
 function formatEnum(raw: string): string {
-  return raw.split("_").map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+  return raw
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
 }
 
 const CharacterList: React.FC = () => {
   const [characters, setCharacters] = useState<CharacterSummaryDTO[]>([]);
+  const [racesByClass, setRacesByClass] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -32,13 +58,21 @@ const CharacterList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/characters")
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data: CharacterSummaryDTO[]) => {
-        setCharacters(data);
+    const charsFetch = fetch("/api/characters").then((res) => {
+      if (!res.ok) {
+        throw new Error();
+      }
+      return res.json() as Promise<CharacterSummaryDTO[]>;
+    });
+
+    const infoFetch = fetch("/api/characters/creation-info")
+      .then((res) => res.json() as Promise<Record<string, string[]>>)
+      .catch(() => ({}) as Record<string, string[]>);
+
+    Promise.all([charsFetch, infoFetch])
+      .then(([chars, raceClasses]) => {
+        setCharacters(chars);
+        setRacesByClass(raceClasses);
         setLoading(false);
       })
       .catch(() => {
@@ -73,10 +107,22 @@ const CharacterList: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!newName.trim()) { setFormError("Name is required."); return; }
-    if (!newGender) { setFormError("Please select a gender."); return; }
-    if (!newClass) { setFormError("Please select a class."); return; }
-    if (!newRace) { setFormError("Please select a race."); return; }
+    if (!newName.trim()) {
+      setFormError("Name is required.");
+      return;
+    }
+    if (!newGender) {
+      setFormError("Please select a gender.");
+      return;
+    }
+    if (!newClass) {
+      setFormError("Please select a class.");
+      return;
+    }
+    if (!newRace) {
+      setFormError("Please select a race.");
+      return;
+    }
 
     setSubmitting(true);
     setFormError(null);
@@ -102,7 +148,7 @@ const CharacterList: React.FC = () => {
     }
   };
 
-  const validRaces = newClass ? (VALID_RACES_BY_CLASS[newClass] ?? []) : [];
+  const validRaces = newClass ? (racesByClass[newClass] ?? []) : [];
 
   return (
     <Page>
@@ -112,47 +158,61 @@ const CharacterList: React.FC = () => {
       <ListArea>
         {loading && <Spinner />}
 
-        {!loading && fetchError && (
-          <EmptyMessage>No characters found.</EmptyMessage>
-        )}
+        {!loading && fetchError && <EmptyMessage>No characters found.</EmptyMessage>}
 
-        {!loading && !fetchError && characters.map((char, i) => {
-          const raceSlug = getRaceIconSlug(char.race, char.gender);
-          const classSlug = CLASS_ICON_SLUGS[char.characterClass] ?? "inv_misc_questionmark";
-          const classColor = CLASS_COLORS[char.characterClass] ?? "#e8f0f8";
-          return (
-            <AnimatedCardWrapper key={char.name} $index={i}>
-              <CharacterCard type="button" onClick={() => handleSelect(char.name)}>
-                <IconsGroup>
-                  <SingleIconWrapper>
-                    <RaceClassIcon src={`${ICON_BASE_MEDIUM}${raceSlug}.jpg`} alt={formatEnum(char.race)} />
-                    <RaceClassIconBorder src={ICON_BORDER_URL} alt="" />
-                  </SingleIconWrapper>
-                  <SingleIconWrapper>
-                    <RaceClassIcon src={`${ICON_BASE_MEDIUM}${classSlug}.jpg`} alt={formatEnum(char.characterClass)} />
-                    <RaceClassIconBorder src={ICON_BORDER_URL} alt="" />
-                  </SingleIconWrapper>
-                </IconsGroup>
-                <CharInfo>
-                  <CharName $color={classColor}>{char.name}</CharName>
-                  <CharMeta>
-                    {formatEnum(char.characterClass)} · {formatEnum(char.race)}
-                  </CharMeta>
-                </CharInfo>
-                <ChevronIndicator aria-hidden="true">❯</ChevronIndicator>
-              </CharacterCard>
+        {!loading &&
+          !fetchError &&
+          characters.map((char, i) => {
+            const raceSlug = getRaceIconSlug(char.race, char.gender);
+            const classSlug = CLASS_ICON_SLUGS[char.characterClass] ?? "inv_misc_questionmark";
+            const classColor = CLASS_COLORS[char.characterClass] ?? "#e8f0f8";
+            return (
+              <AnimatedCardWrapper key={char.name} $index={i}>
+                <CharacterCard type="button" onClick={() => handleSelect(char.name)}>
+                  <IconsGroup>
+                    <SingleIconWrapper>
+                      <RaceClassIcon src={`${ICON_BASE}${raceSlug}.jpg`} alt={formatEnum(char.race)} />
+                      <RaceClassIconBorder src={ICON_BORDER_URL} alt="" />
+                    </SingleIconWrapper>
+                    <SingleIconWrapper>
+                      <RaceClassIcon src={`${ICON_BASE}${classSlug}.jpg`} alt={formatEnum(char.characterClass)} />
+                      <RaceClassIconBorder src={ICON_BORDER_URL} alt="" />
+                    </SingleIconWrapper>
+                  </IconsGroup>
+                  <CharInfo>
+                    <CharName $color={classColor}>{char.name}</CharName>
+                    <CharMeta>
+                      {formatEnum(char.characterClass)} · {formatEnum(char.race)}
+                    </CharMeta>
+                  </CharInfo>
+                  <ChevronIndicator aria-hidden="true">❯</ChevronIndicator>
+                </CharacterCard>
+              </AnimatedCardWrapper>
+            );
+          })}
+
+        {!loading &&
+          !fetchError &&
+          !formOpen &&
+          (addButtonAnimated ? (
+            <AddCharacterCard type="button" onClick={openForm}>
+              <AddIcon>+</AddIcon>Create a new character...
+            </AddCharacterCard>
+          ) : (
+            <AnimatedCardWrapper $index={characters.length}>
+              <AddCharacterCard type="button" onClick={openForm}>
+                <AddIcon>+</AddIcon>Create a new character...
+              </AddCharacterCard>
             </AnimatedCardWrapper>
-          );
-        })}
-
-        {!loading && !fetchError && !formOpen && (
-          addButtonAnimated
-            ? <AddCharacterCard type="button" onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard>
-            : <AnimatedCardWrapper $index={characters.length}><AddCharacterCard type="button" onClick={openForm}><AddIcon>+</AddIcon>Create a new character...</AddCharacterCard></AnimatedCardWrapper>
-        )}
+          ))}
 
         {!loading && formOpen && (
-          <CreateForm onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
+          <CreateForm
+            onSubmit={(e) => {
+              e.preventDefault();
+              void handleSubmit();
+            }}
+          >
             <FormRow>
               <FormField style={{ flex: 2 }}>
                 <FormLabel htmlFor="char-name">Name</FormLabel>
@@ -161,7 +221,10 @@ const CharacterList: React.FC = () => {
                   type="text"
                   placeholder="Character name"
                   value={newName}
-                  onChange={(e) => { setNewName(e.target.value); setFormError(null); }}
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                    setFormError(null);
+                  }}
                   autoComplete="off"
                   autoFocus
                 />
@@ -171,7 +234,10 @@ const CharacterList: React.FC = () => {
                 <FormSelect
                   id="char-gender"
                   value={newGender}
-                  onChange={(e) => { setNewGender(e.target.value); setFormError(null); }}
+                  onChange={(e) => {
+                    setNewGender(e.target.value);
+                    setFormError(null);
+                  }}
                 >
                   <option value="">Select gender...</option>
                   <option value="MALE">Male</option>
@@ -182,14 +248,12 @@ const CharacterList: React.FC = () => {
             <FormRow>
               <FormField>
                 <FormLabel htmlFor="char-class">Class</FormLabel>
-                <FormSelect
-                  id="char-class"
-                  value={newClass}
-                  onChange={(e) => handleClassChange(e.target.value)}
-                >
+                <FormSelect id="char-class" value={newClass} onChange={(e) => handleClassChange(e.target.value)}>
                   <option value="">Select class...</option>
                   {ALL_CLASSES.map((cls) => (
-                    <option key={cls} value={cls}>{formatEnum(cls)}</option>
+                    <option key={cls} value={cls}>
+                      {formatEnum(cls)}
+                    </option>
                   ))}
                 </FormSelect>
               </FormField>
@@ -198,19 +262,26 @@ const CharacterList: React.FC = () => {
                 <FormSelect
                   id="char-race"
                   value={newRace}
-                  onChange={(e) => { setNewRace(e.target.value); setFormError(null); }}
+                  onChange={(e) => {
+                    setNewRace(e.target.value);
+                    setFormError(null);
+                  }}
                   disabled={!newClass}
                 >
                   <option value="">Select race...</option>
                   {validRaces.map((race) => (
-                    <option key={race} value={race}>{formatEnum(race)}</option>
+                    <option key={race} value={race}>
+                      {formatEnum(race)}
+                    </option>
                   ))}
                 </FormSelect>
               </FormField>
             </FormRow>
             {formError && <FormError>{formError}</FormError>}
             <FormActions>
-              <CancelButton type="button" onClick={closeForm}>Cancel</CancelButton>
+              <CancelButton type="button" onClick={closeForm}>
+                Cancel
+              </CancelButton>
               <SubmitButton type="submit" disabled={submitting}>
                 {submitting ? "Creating..." : "Create Character"}
               </SubmitButton>

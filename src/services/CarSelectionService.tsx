@@ -9,13 +9,9 @@ type CarSelectionContextType = {
   findClosestVehicleByAttributeArray: () => VehicleProps;
 };
 
-const CarSelectionContext = createContext<CarSelectionContextType | undefined>(
-  undefined
-);
+const CarSelectionContext = createContext<CarSelectionContextType | undefined>(undefined);
 
-export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [attributeArray, setAttributeArray] = useState<number[]>([]);
 
   // Dynamically update the array at index with given value to account for any number of attribute selectors.
@@ -24,9 +20,7 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
       const newArray = [...prev];
       newArray[index] = value;
       // Initialize new values to 0.
-      const sanitizedArray = newArray.map((val) =>
-        val === undefined ? 0 : val
-      );
+      const sanitizedArray = newArray.map((val) => (val === undefined ? 0 : val));
       return sanitizedArray;
     });
   };
@@ -60,8 +54,7 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
       return matchingIndices[0];
     }
 
-    const randomIndex =
-      matchingIndices[Math.floor(Math.random() * matchingIndices.length)];
+    const randomIndex = matchingIndices[Math.floor(Math.random() * matchingIndices.length)];
 
     return randomIndex;
   };
@@ -69,19 +62,16 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
   // Returns the vehicle element with the closest AttributeArray to the array chosen by the user.
   const findClosestVehicleByAttributeArray = (): VehicleProps => {
     let minDifference: number = 0;
-    let differenceScores: number[] = [];
+    const differenceScores: number[] = [];
 
     for (let i = 0; i < vehicles.length; i++) {
       const difference = totalDifference(vehicles[i].intrinsicAttributeArray);
 
-      console.log(
-        `Difference for vehicle ${vehicles[i].make} ${vehicles[i].model}: `,
-        difference
-      );
+      console.log(`Difference for vehicle ${vehicles[i].make} ${vehicles[i].model}: `, difference);
 
       differenceScores.push(difference);
     }
-    
+
     minDifference = Math.min(...differenceScores);
 
     // In the case of multiple vehicles with the same overall difference, pick a random one to return.
@@ -105,9 +95,7 @@ export const CarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useCarSelectionService = () => {
   const context = useContext(CarSelectionContext);
   if (!context) {
-    throw new Error(
-      "useCarSelectionService must be used within a CarSelectionProvider"
-    );
+    throw new Error("useCarSelectionService must be used within a CarSelectionProvider");
   }
   return context;
 };

@@ -11,7 +11,7 @@ const Card: React.FC<CardProps> = ({ children, disableInitialScroll }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (cardRef.current && !!!disableInitialScroll) {
+    if (cardRef.current && !disableInitialScroll) {
       cardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [disableInitialScroll]);

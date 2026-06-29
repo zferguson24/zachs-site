@@ -5,10 +5,7 @@ export type VehicleProps = {
   topSpeed: string;
   fuelEconomy: FuelEcnomoy;
   // ICE, Hybrid, Electric
-  powertrain:
-    | (Engine & Transmission)
-    | (HybridSystem & Transmission)
-    | ElectricSystem;
+  powertrain: (Engine & Transmission) | (HybridSystem & Transmission) | ElectricSystem;
   bodyStyle: "Sedan" | "Hatchback" | "Coupe" | "Convertible" | "SUV" | "Truck" | "Wagon";
   sizeClass: "Subcompact" | "Compact" | "Midsize" | "Full Size";
   driveType: DriveType;

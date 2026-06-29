@@ -18,11 +18,11 @@ function App() {
             {/* <Sidebar items={menuItems} /> */}
             <div style={{ flex: 1 }}>
               <Routes>
-                <Route path={ROUTES.HOME}                   element={<Landing />} />
-                <Route path={ROUTES.CAR_SELECTION}          element={<CarSelection />} />
-                <Route path={ROUTES.TIMEWALKING}            element={<Navigate to={ROUTES.TIMEWALKING_CHARACTERS} replace />} />
+                <Route path={ROUTES.HOME} element={<Landing />} />
+                <Route path={ROUTES.CAR_SELECTION} element={<CarSelection />} />
+                <Route path={ROUTES.TIMEWALKING} element={<Navigate to={ROUTES.TIMEWALKING_CHARACTERS} replace />} />
                 <Route path={ROUTES.TIMEWALKING_CHARACTERS} element={<CharacterList />} />
-                <Route path={ROUTES.TIMEWALKING_GEAR}       element={<TimewalkingGearSelection />} />
+                <Route path={ROUTES.TIMEWALKING_GEAR} element={<TimewalkingGearSelection />} />
               </Routes>
             </div>
           </div>

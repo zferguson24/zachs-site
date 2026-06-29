@@ -1,36 +1,49 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
-  Panel, PanelHead, CharName, CharMeta, PanelDivider,
-  SlotGrid, SlotCell, WeaponSlotCell, IconWrap, SlotIcon, SlotBorder,
-  SlotText, SlotItemName, SlotLabel, WeaponRowWrap, UnequipBtn, LoadingText,
+  Panel,
+  PanelHead,
+  CharName,
+  CharMeta,
+  PanelDivider,
+  SlotGrid,
+  SlotCell,
+  WeaponSlotCell,
+  IconWrap,
+  SlotIcon,
+  SlotBorder,
+  SlotText,
+  SlotItemName,
+  SlotLabel,
+  WeaponRowWrap,
+  UnequipBtn,
+  LoadingText,
   HoldOverlay,
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
-import { ICON_BASE_LARGE, ICON_BORDER_URL } from "../../constants/wow";
-import { CLASS_COLORS } from "../../constants/wow";
-
-const SLOT_LABELS: Record<string, string> = {
-  HEAD: "Head", NECK: "Neck", SHOULDERS: "Shoulders", BACK: "Back",
-  CHEST: "Chest", WRIST: "Wrist", HANDS: "Hands", WAIST: "Waist",
-  LEGS: "Legs", FEET: "Feet", FINGER_1: "Finger 1", FINGER_2: "Finger 2",
-  TRINKET_1: "Trinket 1", TRINKET_2: "Trinket 2",
-  MAIN_HAND: "Main-Hand", OFF_HAND: "Off-Hand",
-};
+import { ICON_BASE, ICON_BORDER_URL, CLASS_COLORS, SLOT_LABELS } from "../../constants/wow";
 
 // zamimg has no inventoryslot_back — chest texture used as fallback (matches Wowhead's own planner)
 const SLOT_PLACEHOLDERS: Record<string, string> = {
-  HEAD: "inventoryslot_head", NECK: "inventoryslot_neck",
-  SHOULDERS: "inventoryslot_shoulder", BACK: "inventoryslot_chest",
-  CHEST: "inventoryslot_chest", WRIST: "inventoryslot_wrists",
-  HANDS: "inventoryslot_hands", WAIST: "inventoryslot_waist",
-  LEGS: "inventoryslot_legs", FEET: "inventoryslot_feet",
-  FINGER_1: "inventoryslot_finger", FINGER_2: "inventoryslot_finger",
-  TRINKET_1: "inventoryslot_trinket", TRINKET_2: "inventoryslot_trinket",
-  MAIN_HAND: "inventoryslot_mainhand", OFF_HAND: "inventoryslot_offhand",
+  HEAD: "inventoryslot_head",
+  NECK: "inventoryslot_neck",
+  SHOULDERS: "inventoryslot_shoulder",
+  BACK: "inventoryslot_chest",
+  CHEST: "inventoryslot_chest",
+  WRIST: "inventoryslot_wrists",
+  HANDS: "inventoryslot_hands",
+  WAIST: "inventoryslot_waist",
+  LEGS: "inventoryslot_legs",
+  FEET: "inventoryslot_feet",
+  FINGER_1: "inventoryslot_finger",
+  FINGER_2: "inventoryslot_finger",
+  TRINKET_1: "inventoryslot_trinket",
+  TRINKET_2: "inventoryslot_trinket",
+  MAIN_HAND: "inventoryslot_mainhand",
+  OFF_HAND: "inventoryslot_offhand",
 };
 
 // Interleaved left+right columns so CSS grid fills left-col, right-col per row
-const LEFT_COL  = ["HEAD", "NECK", "SHOULDERS", "BACK", "CHEST", "WRIST", "HANDS"];
+const LEFT_COL = ["HEAD", "NECK", "SHOULDERS", "BACK", "CHEST", "WRIST", "HANDS"];
 const RIGHT_COL = ["WAIST", "LEGS", "FEET", "FINGER_1", "FINGER_2", "TRINKET_1", "TRINKET_2"];
 const GRID_SLOTS = LEFT_COL.flatMap((l, i) => [l, RIGHT_COL[i]]);
 const WEAPON_ROW = ["MAIN_HAND", "OFF_HAND"];
@@ -49,42 +62,61 @@ interface CharacterPanelProps {
 }
 
 function formatEnum(raw: string): string {
-  return raw.split("_").map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+  return raw
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
 }
 
 function slotIconSrc(slotName: string, slotData: SlotState | undefined): string {
-  if (slotData?.equipped && slotData.item?.iconUrl) return slotData.item.iconUrl;
-  return `${ICON_BASE_LARGE}${SLOT_PLACEHOLDERS[slotName]}.jpg`;
+  if (slotData?.equipped && slotData.item?.iconUrl) {
+    return slotData.item.iconUrl;
+  }
+  return `${ICON_BASE}${SLOT_PLACEHOLDERS[slotName]}.jpg`;
 }
 
-const CharacterPanel: React.FC<CharacterPanelProps> = ({
-  character,
-  loading,
-  onUnequipAll,
-  onUnequipSlot,
-}) => {
-  const hasAnimated   = useRef(false);
-  const holdTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onUnequipAll, onUnequipSlot }) => {
+  // Tracks whether the entrance animation has already played so it doesn't replay on re-renders.
+  const hasAnimated = useRef(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [holdingSlot, setHoldingSlot] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && character) hasAnimated.current = true;
+    if (!loading && character) {
+      hasAnimated.current = true;
+    }
   }, [loading, character]);
 
   // Clean up any pending hold timer on unmount
   useEffect(() => {
-    return () => { if (holdTimerRef.current) clearTimeout(holdTimerRef.current); };
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current);
+      }
+    };
   }, []);
 
-  if (loading) return <Panel><LoadingText>Loading character…</LoadingText></Panel>;
-  if (!character) return null;
+  if (loading) {
+    return (
+      <Panel>
+        <LoadingText>Loading character…</LoadingText>
+      </Panel>
+    );
+  }
+  if (!character) {
+    return null;
+  }
 
   const animated = !hasAnimated.current;
   const slotMap: Record<string, SlotState> = {};
-  for (const s of character.equipment) slotMap[s.slot] = s;
+  for (const s of character.equipment) {
+    slotMap[s.slot] = s;
+  }
 
   const clearHold = () => {
-    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+    }
     holdTimerRef.current = null;
     setHoldingSlot(null);
   };
@@ -105,6 +137,9 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
     );
   };
 
+  // Returns interaction props only for equipped slots. Three unequip gestures are supported:
+  // right-click (desktop), Delete/Backspace key (keyboard), and a 1-second touch hold (mobile).
+  // Touch coordinates are stored as CSS custom properties so the hold-ripple animates from the tap point.
   const contextMenuProps = (slotName: string) => {
     const s = slotMap[slotName];
     if (!s?.equipped || !s.item) {
@@ -126,10 +161,12 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
         }
       },
       onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
-        if (e.pointerType !== "touch") return;
+        if (e.pointerType !== "touch") {
+          return;
+        }
         const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + "%";
-        const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + "%";
+        const x = (((e.clientX - rect.left) / rect.width) * 100).toFixed(1) + "%";
+        const y = (((e.clientY - rect.top) / rect.height) * 100).toFixed(1) + "%";
         e.currentTarget.style.setProperty("--hold-x", x);
         e.currentTarget.style.setProperty("--hold-y", y);
         setHoldingSlot(slotName);
@@ -138,18 +175,16 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
           setHoldingSlot(null);
         }, 1000);
       },
-      onPointerUp:     clearHold,
+      onPointerUp: clearHold,
       onPointerCancel: clearHold,
-      onPointerLeave:  clearHold,
+      onPointerLeave: clearHold,
     };
   };
 
   return (
     <Panel>
       <PanelHead>
-        <CharName $color={CLASS_COLORS[character.characterClass] ?? "#e8f0f8"}>
-          {character.name}
-        </CharName>
+        <CharName $color={CLASS_COLORS[character.characterClass] ?? "#e8f0f8"}>{character.name}</CharName>
         <CharMeta>
           {formatEnum(character.characterClass)} · {formatEnum(character.race)}
         </CharMeta>
@@ -177,8 +212,8 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({
       </SlotGrid>
 
       <WeaponRowWrap>
-        {slotMap["MAIN_HAND"]?.item?.weaponSlot === "2H" ||
-        slotMap["MAIN_HAND"]?.item?.weaponSlot === "Ranged" ? (
+        {/* 2H and Ranged weapons occupy both weapon cells; render a single full-width cell instead of two. */}
+        {slotMap["MAIN_HAND"]?.item?.weaponSlot === "2H" || slotMap["MAIN_HAND"]?.item?.weaponSlot === "Ranged" ? (
           <WeaponSlotCell
             $reversed={false}
             $row={LEFT_COL.length}

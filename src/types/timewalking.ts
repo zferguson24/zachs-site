@@ -25,9 +25,7 @@ export interface WeaponDTO {
   iconUrl: string | null;
 }
 
-export type GearResult =
-  | ({ kind: "armor" } & ArmorPieceDTO)
-  | ({ kind: "weapon" } & WeaponDTO);
+export type GearResult = ({ kind: "armor" } & ArmorPieceDTO) | ({ kind: "weapon" } & WeaponDTO);
 
 export interface EquippedItem {
   name: string;
@@ -65,4 +63,31 @@ export interface CharacterSummaryDTO {
   race: string;
   characterClass: string;
   gender: string;
+}
+
+export interface GearPlanSlot {
+  slot: string;
+  itemName: string;
+  iconUrl: string | null;
+  cost: number;
+}
+
+export interface GearPlanEvent {
+  expansion: string;
+  startDate: string;
+  endDate: string;
+  slots: GearPlanSlot[];
+  cumulativeSlotsFilled: number;
+  turbulentTimeways: boolean;
+}
+
+export interface GearPlanResponse {
+  characterName: string;
+  resolvedStat: string;
+  fullyEquipped: boolean;
+  fullyEquippedDate: string | null;
+  alreadyEquippedSlots: string[];
+  unresolvableSlots: string[];
+  events: GearPlanEvent[];
+  statOptions: string[];
 }

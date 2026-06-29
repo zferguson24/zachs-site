@@ -26,12 +26,8 @@ const Sidebar: React.FC<SidebarProps> = ({ items }) => {
   return (
     <SidebarContainer collapsed={collapsed}>
       <Header>
-        {!collapsed && (
-          <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Menu</span>
-        )}
-        <ToggleButton onClick={toggleSidebar}>
-          {collapsed ? "☰" : "X"}
-        </ToggleButton>
+        {!collapsed && <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Menu</span>}
+        <ToggleButton onClick={toggleSidebar}>{collapsed ? "☰" : "X"}</ToggleButton>
       </Header>
       <MenuList>
         {items.map(({ name, path, icon }) => {
@@ -39,9 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items }) => {
           return (
             <MenuItemLink key={path} to={path} collapsed={collapsed}>
               <span>{icon}</span>
-              {!collapsed && (
-                <MenuItemText active={isActive}>{name}</MenuItemText>
-              )}
+              {!collapsed && <MenuItemText active={isActive}>{name}</MenuItemText>}
             </MenuItemLink>
           );
         })}

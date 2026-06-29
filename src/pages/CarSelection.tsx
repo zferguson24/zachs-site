@@ -11,17 +11,13 @@ import { VehicleProps } from "../types/VehicleTypes";
 const CarSelection: React.FC = () => {
   const [chosenVehicle, setChosenVehicle] = useState<VehicleProps | null>(null);
 
-  const {
-    updateAttributeAtIndex,
-    setAttributeArray,
-    findClosestVehicleByAttributeArray,
-  } = useCarSelectionService();
+  const { updateAttributeAtIndex, setAttributeArray, findClosestVehicleByAttributeArray } = useCarSelectionService();
   const { sliderHeading, sliderLabels } = CONSTANTS.carSelection;
   const sliders = Object.entries(sliderLabels);
 
   const handleAttributeUpdate = (index: number, value: number): void => {
     // Reset chosen vehicle when sliders are interacted with again.
-    if (!!chosenVehicle) {
+    if (chosenVehicle) {
       setChosenVehicle(null);
     }
 
@@ -32,10 +28,10 @@ const CarSelection: React.FC = () => {
   const updateChosenVehicle = (): void => {
     setChosenVehicle(findClosestVehicleByAttributeArray());
 
-    fetch('/api/gear/armor')
-      .then(r => r.json())
-      .then(data => console.log('[timewalkers] /api/gear/armor:', data))
-      .catch(err => console.error('[timewalkers] /api/gear/armor failed:', err));
+    fetch("/api/gear/armor")
+      .then((r) => r.json())
+      .then((data) => console.log("[timewalkers] /api/gear/armor:", data))
+      .catch((err) => console.error("[timewalkers] /api/gear/armor failed:", err));
   };
 
   useEffect(() => {
@@ -59,7 +55,7 @@ const CarSelection: React.FC = () => {
         ))}
         <Button onClick={updateChosenVehicle} label="Submit"></Button>
       </Card>
-      {!!chosenVehicle ? (
+      {chosenVehicle ? (
         <Card>
           <Vehicle {...chosenVehicle} />
         </Card>
