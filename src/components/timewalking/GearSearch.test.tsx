@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { server } from "../../test/mocks/server";
-import { searchResults, emptySearchResults } from "../../test/mocks/fixtures";
+import { emptySearchResults } from "../../test/mocks/fixtures";
 import GearSearch from "./GearSearch";
 import type { GearResult } from "../../types/timewalking";
 
@@ -11,14 +11,6 @@ import type { GearResult } from "../../types/timewalking";
 
 function renderSearch(onEquip = vi.fn()) {
   return { onEquip, ...render(<GearSearch onEquip={onEquip} />) };
-}
-
-async function typeQuery(query: string) {
-  const input = screen.getByRole("textbox", { name: /search gear/i });
-  await userEvent.clear(input);
-  await userEvent.type(input, query);
-  // wait for 500 ms debounce
-  await new Promise((r) => setTimeout(r, 550));
 }
 
 // ─── tests ───────────────────────────────────────────────────────────────────

@@ -5,7 +5,6 @@ import { http, HttpResponse } from "msw";
 import { server } from "../../test/mocks/server";
 import {
   warriorGearPlan,
-  druidGearPlan,
   fullyEquippedPlan,
   alreadyFullPlan,
   planWithUnresolvable,

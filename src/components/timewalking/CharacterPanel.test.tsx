@@ -10,7 +10,6 @@ import {
   characterWithRanged,
   characterWith1H,
 } from "../../test/mocks/fixtures";
-import { ICON_BASE } from "../../constants/wow";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
