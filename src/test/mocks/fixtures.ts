@@ -1,4 +1,4 @@
-import type { CharacterData, GearPlanResponse, GearSearchResultDTO } from "../../types/timewalking";
+import type { CharacterData, EquipResponse, GearPlanResponse, GearSearchResultDTO } from "../../types/timewalking";
 
 const ALL_SLOTS = [
   "HEAD",
@@ -28,6 +28,11 @@ export const baseCharacter: CharacterData = {
   gender: "MALE",
   equipment: emptyEquipment,
 };
+
+// Wraps a character in the PATCH /gear response shape ({ character, equipped, notFound }).
+export function equipResponse(character: CharacterData, overrides?: Partial<EquipResponse>): EquipResponse {
+  return { character, equipped: [], notFound: [], ...overrides };
+}
 
 export const characterWithHead: CharacterData = {
   ...baseCharacter,

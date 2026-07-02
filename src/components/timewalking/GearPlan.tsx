@@ -45,6 +45,7 @@ import { ICON_BASE, ICON_BORDER_URL, EXPANSION_ICON_SLUGS, SLOT_LABELS } from ".
 const JUSTICE_ICON_URL = `${ICON_BASE}pvecurrency-justice.jpg`;
 const TURBULENT_ICON_URL = `${ICON_BASE}ability_evoker_timedilation.jpg`;
 import { GearPlanResponse } from "../../types/timewalking";
+import { getJson } from "../../services/api";
 
 // WoW primary stat colors: green / red / blue
 const STAT_COLOR: Record<string, string> = {
@@ -102,13 +103,7 @@ const GearPlan: React.FC<GearPlanProps> = ({ characterName, refreshKey, onEquipS
     const url = preferredStat
       ? `/api/characters/${characterName}/gear-plan?preferredStat=${preferredStat}`
       : `/api/characters/${characterName}/gear-plan`;
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error();
-        }
-        return res.json() as Promise<GearPlanResponse>;
-      })
+    getJson<GearPlanResponse>(url)
       .then(setPlan)
       .catch(() => setError(true))
       .finally(() => setLoading(false));

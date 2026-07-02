@@ -6,7 +6,8 @@ import GearSearch from "../components/timewalking/GearSearch";
 import CharacterPanel from "../components/timewalking/CharacterPanel";
 import GearPlan from "../components/timewalking/GearPlan";
 import Toast from "../components/Toast";
-import { GearResult, CharacterData, SlotState } from "../types/timewalking";
+import { GearResult, CharacterData, EquipResponse, SlotState } from "../types/timewalking";
+import { getJson, sendJson, apiErrorMessage } from "../services/api";
 
 // DB armor slot names → EquipmentSlot enum values
 // Ring/Trinket auto-fill is handled here; explicit slot overrides come from GearSearch slot buttons
@@ -82,13 +83,7 @@ const TimewalkingGearSelection: React.FC = () => {
     if (!characterName) {
       return;
     }
-    fetch(`/api/characters/${characterName}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("not found");
-        }
-        return res.json() as Promise<CharacterData>;
-      })
+    getJson<CharacterData>(`/api/characters/${characterName}`)
       .then(setCharacter)
       .catch(() => setToast("Could not load character data."))
       .finally(() => setCharacterLoading(false));
@@ -102,42 +97,29 @@ const TimewalkingGearSelection: React.FC = () => {
   // wrappers over one of these — they share error handling and the post-mutation state update.
   const patchGear = async (slots: Array<{ slot: string; itemName: string }>, errorMsg: string) => {
     try {
-      const res = await fetch(`/api/characters/${characterName}/gear`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slots }),
-      });
-      if (res.ok) {
-        const data: CharacterData = await res.json();
-        setCharacter(data);
-        setGearPlanKey((k) => k + 1);
-      } else if (res.status === 400) {
-        const data: { message: string; rejected: { slot: string; reason: string }[] } = await res.json();
-        setToast(data.rejected?.[0]?.reason ?? data.message ?? "Validation failed.");
-      } else {
-        setToast(errorMsg);
+      const data = await sendJson<EquipResponse>(`/api/characters/${characterName}/gear`, "PATCH", { slots });
+      setCharacter(data.character);
+      setGearPlanKey((k) => k + 1);
+      // The backend silently skips items whose names don't resolve; surface them
+      // so a partial apply doesn't look identical to a full one.
+      if (data.notFound.length > 0) {
+        const names = data.notFound.map((n) => n.itemName).join(", ");
+        setToast(
+          `${data.notFound.length} item${data.notFound.length !== 1 ? "s" : ""} could not be equipped: ${names}`,
+        );
       }
-    } catch {
-      setToast("Network error. Please try again.");
+    } catch (err) {
+      setToast(apiErrorMessage(err, errorMsg));
     }
   };
 
   const deleteGear = async (slots: string[]) => {
     try {
-      const res = await fetch(`/api/characters/${characterName}/gear`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slots }),
-      });
-      if (res.ok) {
-        const data: CharacterData = await res.json();
-        setCharacter(data);
-        setGearPlanKey((k) => k + 1);
-      } else {
-        setToast("Failed to unequip items. Please try again.");
-      }
-    } catch {
-      setToast("Network error. Please try again.");
+      const data = await sendJson<CharacterData>(`/api/characters/${characterName}/gear`, "DELETE", { slots });
+      setCharacter(data);
+      setGearPlanKey((k) => k + 1);
+    } catch (err) {
+      setToast(apiErrorMessage(err, "Failed to unequip items. Please try again."));
     }
   };
 

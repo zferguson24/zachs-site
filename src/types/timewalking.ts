@@ -47,6 +47,20 @@ export interface CharacterData {
   equipment: SlotState[];
 }
 
+export interface NotFoundSlot {
+  slot: string;
+  itemName: string;
+}
+
+// Wrapped response from PATCH /api/characters/{name}/gear. `notFound` lists
+// requested items whose names had no match in the database (silently skipped
+// server-side), so the UI can surface partial applies.
+export interface EquipResponse {
+  character: CharacterData;
+  equipped: string[];
+  notFound: NotFoundSlot[];
+}
+
 export interface ExpansionGearDTO {
   expansion: string;
   armorPieces: ArmorPieceDTO[];

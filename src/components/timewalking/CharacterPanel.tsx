@@ -21,6 +21,7 @@ import {
 } from "./CharacterPanel.styles";
 import { CharacterData, SlotState } from "../../types/timewalking";
 import { ICON_BASE, ICON_BORDER_URL, CLASS_COLORS, SLOT_LABELS } from "../../constants/wow";
+import { formatEnum } from "../../utils/format";
 
 // zamimg has no inventoryslot_back — chest texture used as fallback (matches Wowhead's own planner)
 const SLOT_PLACEHOLDERS: Record<string, string> = {
@@ -59,13 +60,6 @@ interface CharacterPanelProps {
   loading: boolean;
   onUnequipAll: () => void;
   onUnequipSlot: (slot: string) => void;
-}
-
-function formatEnum(raw: string): string {
-  return raw
-    .split("_")
-    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
 }
 
 function slotIconSrc(slotName: string, slotData: SlotState | undefined): string {

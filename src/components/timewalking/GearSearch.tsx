@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SearchWrapper,
   SearchInput,
@@ -26,6 +26,7 @@ import {
 } from "./GearSearch.styles";
 import { GearSearchResultDTO, GearResult } from "../../types/timewalking";
 import { ICON_BORDER_URL } from "../../constants/wow";
+import { getJson } from "../../services/api";
 const DEBOUNCE_MS = 500;
 const MIN_LENGTH = 3;
 
@@ -73,52 +74,59 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
   const [results, setResults] = useState<GearResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [error, setError] = useState(false);
   // Incremented on each completed search; passed as `key` to ResultsScroller so cards remount and re-animate.
   const [searchVersion, setSearchVersion] = useState(0);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Each keystroke re-runs this effect; the cleanup cancels both the pending
+  // debounce timer and any in-flight request. Aborting on supersession is what
+  // prevents the stale-response race (an older, slower response overwriting a
+  // newer one) — after abort, the catch/finally below deliberately do nothing.
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
     if (query.length < MIN_LENGTH) {
       setResults([]);
       setLoading(false);
       setSearched(false);
+      setError(false);
       return;
     }
 
     setLoading(true);
-    debounceRef.current = setTimeout(async () => {
-      const encoded = encodeURIComponent(query);
-      const res = await fetch(`/api/gear/search?q=${encoded}`);
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const data = await getJson<GearSearchResultDTO>(
+          `/api/gear/search?q=${encodeURIComponent(query)}`,
+          controller.signal,
+        );
+        // Backend returns separate armorPieces and weapons arrays; merge into one list
+        // tagged with `kind` so downstream components can branch on armor vs weapon logic.
+        const merged: GearResult[] = [
+          ...data.armorPieces.map((a) => ({ kind: "armor" as const, ...a })),
+          ...data.weapons.map((w) => ({ kind: "weapon" as const, ...w })),
+        ];
 
-      if (!res.ok) {
-        setResults([]);
-        setLoading(false);
+        setResults(merged);
+        setSearchVersion((v) => v + 1);
         setSearched(true);
-        return;
+        setError(false);
+      } catch {
+        if (controller.signal.aborted) {
+          return;
+        }
+        setResults([]);
+        setSearched(true);
+        setError(true);
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
-
-      const data: GearSearchResultDTO = await res.json();
-      // Backend returns separate armorPieces and weapons arrays; merge into one list
-      // tagged with `kind` so downstream components can branch on armor vs weapon logic.
-      const merged: GearResult[] = [
-        ...data.armorPieces.map((a) => ({ kind: "armor" as const, ...a })),
-        ...data.weapons.map((w) => ({ kind: "weapon" as const, ...w })),
-      ];
-
-      setResults(merged);
-      setSearchVersion((v) => v + 1);
-      setLoading(false);
-      setSearched(true);
     }, DEBOUNCE_MS);
 
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      clearTimeout(timer);
+      controller.abort();
     };
   }, [query]);
 
@@ -138,7 +146,11 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
       <ResultsArea>
         {loading && <Spinner />}
 
-        {!loading && searched && results.length === 0 && <EmptyMessage>No gear found for "{query}"</EmptyMessage>}
+        {!loading && searched && error && <EmptyMessage role="alert">Search failed. Please try again.</EmptyMessage>}
+
+        {!loading && searched && !error && results.length === 0 && (
+          <EmptyMessage>No gear found for "{query}"</EmptyMessage>
+        )}
 
         {!loading && results.length > 0 && (
           <ResultsScroller key={searchVersion} $capped={results.length >= 4}>

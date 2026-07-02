@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, delay } from "msw";
 import { server } from "../../test/mocks/server";
-import { emptySearchResults } from "../../test/mocks/fixtures";
+import { emptySearchResults, searchResults } from "../../test/mocks/fixtures";
 import GearSearch from "./GearSearch";
 import type { GearResult } from "../../types/timewalking";
 
@@ -298,13 +298,49 @@ describe("GearSearch", () => {
 
   // ── error handling ─────────────────────────────────────────────────────────
 
-  it("shows empty results (no crash) when the API returns a non-OK response", async () => {
+  it("shows an error message when the API returns a non-OK response", async () => {
     server.use(http.get("/api/gear/search", () => new HttpResponse(null, { status: 500 })));
     renderSearch();
     const input = screen.getByRole("textbox", { name: /search gear/i });
     await userEvent.type(input, "swo");
     vi.advanceTimersByTime(510);
-    await waitFor(() => expect(screen.queryByRole("status")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(/search failed/i));
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(screen.queryByText("Iron Helm")).not.toBeInTheDocument();
+  });
+
+  it("shows an error message and stops the spinner when the fetch throws (network error)", async () => {
+    server.use(http.get("/api/gear/search", () => HttpResponse.error()));
+    renderSearch();
+    const input = screen.getByRole("textbox", { name: /search gear/i });
+    await userEvent.type(input, "swo");
+    vi.advanceTimersByTime(510);
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(/search failed/i));
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("ignores a stale response when a newer query supersedes an in-flight request", async () => {
+    // First query ("swo") is slow and returns results; refined query ("sword")
+    // returns empty immediately. The slow response must not clobber the new one.
+    server.use(
+      http.get("/api/gear/search", async ({ request }) => {
+        const q = new URL(request.url).searchParams.get("q");
+        if (q === "swo") {
+          await delay(2000);
+          return HttpResponse.json(searchResults);
+        }
+        return HttpResponse.json(emptySearchResults);
+      }),
+    );
+    renderSearch();
+    const input = screen.getByRole("textbox", { name: /search gear/i });
+    await userEvent.type(input, "swo");
+    vi.advanceTimersByTime(510); // fire request A (slow)
+    await userEvent.type(input, "rd"); // query becomes "sword" — aborts A
+    vi.advanceTimersByTime(510); // fire request B (fast, empty)
+    await waitFor(() => expect(screen.getByText(/no gear found/i)).toBeInTheDocument());
+    vi.advanceTimersByTime(2000); // A's delayed response would land now if not aborted
+    await waitFor(() => expect(screen.queryByText("Iron Helm")).not.toBeInTheDocument());
+    expect(screen.getByText(/no gear found/i)).toBeInTheDocument();
   });
 });

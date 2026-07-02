@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { server } from "../test/mocks/server";
-import { baseCharacter, characterWithFinger1, characterWithTrinket1 } from "../test/mocks/fixtures";
+import { baseCharacter, characterWithFinger1, characterWithTrinket1, equipResponse } from "../test/mocks/fixtures";
 import TimewalkingGearSelection from "./TimewalkingGearSelection";
 import type { GearResult } from "../types/timewalking";
 
@@ -190,7 +190,7 @@ function getPatchBody(): Promise<{ slots: Array<{ slot: string; itemName: string
       http.patch("/api/characters/TESTCHAR/gear", async ({ request }) => {
         const body = await request.json() as { slots: Array<{ slot: string; itemName: string }> };
         resolve(body);
-        return HttpResponse.json(baseCharacter);
+        return HttpResponse.json(equipResponse(baseCharacter));
       }),
     );
   });
@@ -348,11 +348,27 @@ describe("TimewalkingGearSelection", () => {
 
   it("updates the character state after a successful PATCH", async () => {
     const updatedCharacter = { ...baseCharacter, name: "UPDATED" };
-    server.use(http.patch("/api/characters/TESTCHAR/gear", () => HttpResponse.json(updatedCharacter)));
+    server.use(
+      http.patch("/api/characters/TESTCHAR/gear", () => HttpResponse.json(equipResponse(updatedCharacter))),
+    );
     renderWithRouter("TESTCHAR");
     await waitForCharacterLoaded();
     await userEvent.click(screen.getByTestId("equip-head"));
     await waitFor(() => expect(screen.getByTestId("char-name")).toHaveTextContent("UPDATED"));
+  });
+
+  it("shows a toast listing items the backend could not find (notFound)", async () => {
+    server.use(
+      http.patch("/api/characters/TESTCHAR/gear", () =>
+        HttpResponse.json(
+          equipResponse(baseCharacter, { notFound: [{ slot: "HEAD", itemName: "Iron Helm" }] }),
+        ),
+      ),
+    );
+    renderWithRouter("TESTCHAR");
+    await waitForCharacterLoaded();
+    await userEvent.click(screen.getByTestId("equip-head"));
+    expect(await screen.findByTestId("toast")).toHaveTextContent("1 item could not be equipped: Iron Helm");
   });
 
   it("increments the GearPlan refreshKey after a successful PATCH", async () => {
@@ -480,7 +496,7 @@ describe("TimewalkingGearSelection", () => {
     server.use(
       http.patch("/api/characters/TESTCHAR/gear", () => {
         patchFired = true;
-        return HttpResponse.json(baseCharacter);
+        return HttpResponse.json(equipResponse(baseCharacter));
       }),
     );
     renderWithRouter("TESTCHAR");
@@ -516,11 +532,11 @@ describe("TimewalkingGearSelection", () => {
     expect(await screen.findByTestId("toast")).toHaveTextContent(/cannot determine equip slot/i);
   });
 
-  it("shows 'Validation failed.' when a 400 response has no rejected reason or message", async () => {
+  it("falls back to the action's error message when a 400 response has no rejected reason or message", async () => {
     server.use(http.patch("/api/characters/TESTCHAR/gear", () => HttpResponse.json({}, { status: 400 })));
     renderWithRouter("TESTCHAR");
     await waitForCharacterLoaded();
     await userEvent.click(screen.getByTestId("equip-head"));
-    expect(await screen.findByTestId("toast")).toHaveTextContent("Validation failed.");
+    expect(await screen.findByTestId("toast")).toHaveTextContent(/failed to equip/i);
   });
 });

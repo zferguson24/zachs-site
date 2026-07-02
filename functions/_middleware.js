@@ -134,7 +134,9 @@ export async function onRequest(context) {
     const ts = Date.now().toString();
     const sig = await sign(env.COOKIE_SECRET, ts);
     const redirectParam = url.searchParams.get('redirect');
-    const safePath = redirectParam?.startsWith('/') ? redirectParam : '/';
+    // Same-origin paths only: must start with a single '/'. A double slash
+    // ('//evil.com') is a protocol-relative URL and would be an open redirect.
+    const safePath = redirectParam?.startsWith('/') && !redirectParam.startsWith('//') ? redirectParam : '/';
 
     return new Response(null, {
       status: 302,

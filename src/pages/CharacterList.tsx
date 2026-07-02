@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CharacterSummaryDTO } from "../types/timewalking";
+import { CharacterSummaryDTO, CharacterData } from "../types/timewalking";
 import { ROUTES } from "../constants/routes";
+import { getJson, sendJson, apiErrorMessage } from "../services/api";
+import { formatEnum } from "../utils/format";
 import { ICON_BASE, ICON_BORDER_URL } from "../constants/wow";
 import { ALL_CLASSES, CLASS_ICON_SLUGS, CLASS_COLORS, getRaceIconSlug } from "../constants/wow";
 import {
@@ -35,13 +37,6 @@ import {
   FormError,
 } from "./CharacterList.styles";
 
-function formatEnum(raw: string): string {
-  return raw
-    .split("_")
-    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
-}
-
 const CharacterList: React.FC = () => {
   const [characters, setCharacters] = useState<CharacterSummaryDTO[]>([]);
   const [racesByClass, setRacesByClass] = useState<Record<string, string[]>>({});
@@ -58,16 +53,13 @@ const CharacterList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const charsFetch = fetch("/api/characters").then((res) => {
-      if (!res.ok) {
-        throw new Error();
-      }
-      return res.json() as Promise<CharacterSummaryDTO[]>;
-    });
+    const charsFetch = getJson<CharacterSummaryDTO[]>("/api/characters");
 
-    const infoFetch = fetch("/api/characters/creation-info")
-      .then((res) => res.json() as Promise<Record<string, string[]>>)
-      .catch(() => ({}) as Record<string, string[]>);
+    // creation-info failing shouldn't block the list — the form just loses its
+    // race options, so fall back to an empty map.
+    const infoFetch = getJson<Record<string, string[]>>("/api/characters/creation-info").catch(
+      () => ({}) as Record<string, string[]>,
+    );
 
     Promise.all([charsFetch, infoFetch])
       .then(([chars, raceClasses]) => {
@@ -128,21 +120,15 @@ const CharacterList: React.FC = () => {
     setFormError(null);
 
     try {
-      const res = await fetch("/api/characters", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName.trim(), race: newRace, characterClass: newClass, gender: newGender }),
+      const data = await sendJson<CharacterData>("/api/characters", "POST", {
+        name: newName.trim(),
+        race: newRace,
+        characterClass: newClass,
+        gender: newGender,
       });
-
-      if (res.ok) {
-        const data: { name: string } = await res.json();
-        navigate(ROUTES.TIMEWALKING_GEAR, { state: { characterName: data.name } });
-      } else {
-        const data: { message?: string } = await res.json();
-        setFormError(data.message ?? "Failed to create character.");
-      }
-    } catch {
-      setFormError("Network error. Please try again.");
+      navigate(ROUTES.TIMEWALKING_GEAR, { state: { characterName: data.name } });
+    } catch (err) {
+      setFormError(apiErrorMessage(err, "Failed to create character."));
     } finally {
       setSubmitting(false);
     }
@@ -158,7 +144,14 @@ const CharacterList: React.FC = () => {
       <ListArea>
         {loading && <Spinner />}
 
-        {!loading && fetchError && <EmptyMessage>No characters found.</EmptyMessage>}
+        {/* A failed fetch and an empty list are different situations — say which one happened. */}
+        {!loading && fetchError && (
+          <EmptyMessage role="alert">Couldn't load characters. Please try again later.</EmptyMessage>
+        )}
+
+        {!loading && !fetchError && characters.length === 0 && (
+          <EmptyMessage>No characters yet — create your first one below.</EmptyMessage>
+        )}
 
         {!loading &&
           !fetchError &&

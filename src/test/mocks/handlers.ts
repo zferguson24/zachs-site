@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import {
   baseCharacter,
+  equipResponse,
   warriorGearPlan,
   druidGearPlan,
   searchResults,
@@ -33,7 +34,7 @@ export const handlers = [
   }),
 
   http.patch("/api/characters/:name/gear", () => {
-    return HttpResponse.json(baseCharacter);
+    return HttpResponse.json(equipResponse(baseCharacter));
   }),
 
   http.delete("/api/characters/:name/gear", () => {
