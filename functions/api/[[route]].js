@@ -2,7 +2,7 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  const upstream = new URL(url.pathname + url.search, env.RAILWAY_URL);
+  const upstream = new URL(url.pathname + url.search, env.SERVICE_URL);
 
   const headers = new Headers(request.headers);
   headers.set('Authorization', `Bearer ${env.API_KEY}`);
