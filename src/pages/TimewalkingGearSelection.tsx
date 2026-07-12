@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import { Page, BackButton } from "./TimewalkingGearSelection.styles";
@@ -78,6 +78,12 @@ const TimewalkingGearSelection: React.FC = () => {
   const [toast, setToast] = useState<string | null>(null);
   // Incrementing gearPlanKey forces GearPlan to re-fetch after any gear mutation.
   const [gearPlanKey, setGearPlanKey] = useState(0);
+  const [justEquippedSlots, setJustEquippedSlots] = useState<string[]>([]);
+  const [justEquippedItem, setJustEquippedItem] = useState<string | null>(null);
+  const [justUnequippedSlots, setJustUnequippedSlots] = useState<string[]>([]);
+  const equipSlotsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const equipItemTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unequipSlotsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!characterName) {
@@ -100,6 +106,22 @@ const TimewalkingGearSelection: React.FC = () => {
       const data = await sendJson<EquipResponse>(`/api/characters/${characterName}/gear`, "PATCH", { slots });
       setCharacter(data.character);
       setGearPlanKey((k) => k + 1);
+      // Animate equipped slots: single-item gets immediate glow + card flash;
+      // multi-item (Apply Plan) gets a staggered cascade — 35ms delay per slot position.
+      const successfulSlots = slots.filter((s) => !data.notFound.some((n) => n.itemName === s.itemName));
+      if (successfulSlots.length > 0) {
+        if (unequipSlotsTimerRef.current) clearTimeout(unequipSlotsTimerRef.current);
+        setJustUnequippedSlots([]);
+        if (equipSlotsTimerRef.current) clearTimeout(equipSlotsTimerRef.current);
+        setJustEquippedSlots(successfulSlots.map((s) => s.slot));
+        const clearAfter = successfulSlots.length * 35 + 500;
+        equipSlotsTimerRef.current = setTimeout(() => setJustEquippedSlots([]), clearAfter);
+        if (successfulSlots.length === 1) {
+          if (equipItemTimerRef.current) clearTimeout(equipItemTimerRef.current);
+          setJustEquippedItem(successfulSlots[0].itemName);
+          equipItemTimerRef.current = setTimeout(() => setJustEquippedItem(null), 400);
+        }
+      }
       // The backend silently skips items whose names don't resolve; surface them
       // so a partial apply doesn't look identical to a full one.
       if (data.notFound.length > 0) {
@@ -114,10 +136,21 @@ const TimewalkingGearSelection: React.FC = () => {
   };
 
   const deleteGear = async (slots: string[]) => {
+    // Capture which of the requested slots are actually equipped before the call,
+    // so we know which ones to animate after the response arrives.
+    const equippedBefore = character?.equipment.filter((s) => s.equipped && slots.includes(s.slot)).map((s) => s.slot) ?? [];
     try {
       const data = await sendJson<CharacterData>(`/api/characters/${characterName}/gear`, "DELETE", { slots });
       setCharacter(data);
       setGearPlanKey((k) => k + 1);
+      if (equippedBefore.length > 0) {
+        if (equipSlotsTimerRef.current) clearTimeout(equipSlotsTimerRef.current);
+        setJustEquippedSlots([]);
+        if (unequipSlotsTimerRef.current) clearTimeout(unequipSlotsTimerRef.current);
+        setJustUnequippedSlots(equippedBefore);
+        const clearAfter = equippedBefore.length * 35 + 500;
+        unequipSlotsTimerRef.current = setTimeout(() => setJustUnequippedSlots([]), clearAfter);
+      }
     } catch (err) {
       setToast(apiErrorMessage(err, "Failed to unequip items. Please try again."));
     }
@@ -146,13 +179,15 @@ const TimewalkingGearSelection: React.FC = () => {
     <Page>
       <BackButton onClick={() => navigate(ROUTES.TIMEWALKING_CHARACTERS)}>⮜ Back to Characters</BackButton>
 
-      <GearSearch onEquip={handleEquip} />
+      <GearSearch onEquip={handleEquip} flashedItem={justEquippedItem} />
 
       <CharacterPanel
         character={character}
         loading={characterLoading}
         onUnequipAll={handleUnequipAll}
         onUnequipSlot={handleUnequipSlot}
+        justEquippedSlots={justEquippedSlots}
+        justUnequippedSlots={justUnequippedSlots}
       />
 
       {characterName && (

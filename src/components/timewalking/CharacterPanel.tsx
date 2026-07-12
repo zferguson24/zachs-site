@@ -60,6 +60,8 @@ interface CharacterPanelProps {
   loading: boolean;
   onUnequipAll: () => void;
   onUnequipSlot: (slot: string) => void;
+  justEquippedSlots?: string[];
+  justUnequippedSlots?: string[];
 }
 
 function slotIconSrc(slotName: string, slotData: SlotState | undefined): string {
@@ -69,7 +71,7 @@ function slotIconSrc(slotName: string, slotData: SlotState | undefined): string 
   return `${ICON_BASE}${SLOT_PLACEHOLDERS[slotName]}.jpg`;
 }
 
-const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onUnequipAll, onUnequipSlot }) => {
+const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onUnequipAll, onUnequipSlot, justEquippedSlots = [], justUnequippedSlots = [] }) => {
   // Tracks whether the entrance animation has already played so it doesn't replay on re-renders.
   const hasAnimated = useRef(false);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -106,6 +108,25 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onU
   for (const s of character.equipment) {
     slotMap[s.slot] = s;
   }
+
+  // Equip: cascade top→bottom in canonical slot order.
+  // Unequip: cascade bottom→top (reverse canonical) so the sweep reads as "clearing upward".
+  // Single-slot actions always fire with delay 0 so feedback is instant.
+  const CANONICAL_ORDER = [...GRID_SLOTS, ...WEAPON_ROW];
+  const sortedEquipped = [...justEquippedSlots].sort(
+    (a, b) => CANONICAL_ORDER.indexOf(a) - CANONICAL_ORDER.indexOf(b),
+  );
+  const equipDelayFor = (slot: string): number => {
+    const pos = sortedEquipped.indexOf(slot);
+    return pos >= 0 && justEquippedSlots.length > 1 ? pos * 35 : 0;
+  };
+  const sortedUnequipped = [...justUnequippedSlots].sort(
+    (a, b) => CANONICAL_ORDER.indexOf(b) - CANONICAL_ORDER.indexOf(a),
+  );
+  const unequipDelayFor = (slot: string): number => {
+    const pos = sortedUnequipped.indexOf(slot);
+    return pos >= 0 && justUnequippedSlots.length > 1 ? pos * 35 : 0;
+  };
 
   const clearHold = () => {
     if (holdTimerRef.current) {
@@ -196,6 +217,10 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onU
               $row={row}
               $animated={animated}
               $mobileOrder={mobileSlotOrder(i)}
+              $justEquipped={justEquippedSlots.includes(slot)}
+              $equipDelay={equipDelayFor(slot)}
+              $justUnequipped={justUnequippedSlots.includes(slot)}
+              $unequipDelay={unequipDelayFor(slot)}
               {...contextMenuProps(slot)}
             >
               <HoldOverlay $active={holdingSlot === slot} />
@@ -213,6 +238,10 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onU
             $row={LEFT_COL.length}
             $animated={animated}
             $mobileOrder={15}
+            $justEquipped={justEquippedSlots.includes("MAIN_HAND")}
+            $equipDelay={equipDelayFor("MAIN_HAND")}
+            $justUnequipped={justUnequippedSlots.includes("MAIN_HAND")}
+            $unequipDelay={unequipDelayFor("MAIN_HAND")}
             {...contextMenuProps("MAIN_HAND")}
           >
             <HoldOverlay $active={holdingSlot === "MAIN_HAND"} />
@@ -226,6 +255,10 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ character, loading, onU
               $row={LEFT_COL.length}
               $animated={animated}
               $mobileOrder={15 + i}
+              $justEquipped={justEquippedSlots.includes(slot)}
+              $equipDelay={equipDelayFor(slot)}
+              $justUnequipped={justUnequippedSlots.includes(slot)}
+              $unequipDelay={unequipDelayFor(slot)}
               {...contextMenuProps(slot)}
             >
               <HoldOverlay $active={holdingSlot === slot} />

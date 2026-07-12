@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import {
   BG_BASE,
   BG_ELEVATED,
@@ -20,6 +20,12 @@ import {
 } from "../../styles/tokens";
 
 export { Spinner, EmptyMessage, AnimatedCardWrapper } from "../../styles/shared";
+
+const cardFlash = keyframes`
+  0%   { background-color: ${BG_ELEVATED}; border-color: ${BORDER}; }
+  25%  { background-color: #1a3a28;        border-color: #3a7048;   }
+  100% { background-color: ${BG_ELEVATED}; border-color: ${BORDER}; }
+`;
 
 export { IconWrapper, IconImg as ItemIconImg, IconBorder } from "./WowIcon.styles";
 
@@ -71,7 +77,7 @@ export const ResultsScroller = styled.div<{ $capped: boolean }>`
   }
 `;
 
-export const ResultCard = styled.div<{ $clickable: boolean }>`
+export const ResultCard = styled.div<{ $clickable: boolean; $flashed: boolean }>`
   width: 100%;
   text-align: left;
   font-size: inherit;
@@ -94,6 +100,12 @@ export const ResultCard = styled.div<{ $clickable: boolean }>`
     outline: 2px solid ${BORDER_HOVER};
     outline-offset: 2px;
   }
+
+  ${({ $flashed }) =>
+    $flashed &&
+    css`
+      animation: ${cardFlash} 0.35s ease both;
+    `}
 `;
 
 export const CardRow = styled.div`

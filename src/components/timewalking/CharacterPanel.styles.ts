@@ -40,6 +40,20 @@ const holdFill = keyframes`
   100% { clip-path: circle(150% at var(--hold-x, 50%) var(--hold-y, 50%)); }
 `;
 
+const equipGlow = keyframes`
+  0%   { border-color: ${BORDER_SLOT}; box-shadow: none;                                    transform: scale(1);    }
+  18%  { border-color: #c8a84b;        box-shadow: 0 0 10px 2px rgba(200, 168, 75, 0.45); transform: scale(1.03); }
+  60%  { border-color: #8a6e2a;        box-shadow: 0 0 4px 1px rgba(200, 168, 75, 0.15);  transform: scale(1.01); }
+  100% { border-color: ${BORDER_SLOT}; box-shadow: none;                                    transform: scale(1);    }
+`;
+
+const unequipPulse = keyframes`
+  0%   { border-color: ${BORDER_SLOT}; box-shadow: none;                                     transform: scale(1);    }
+  18%  { border-color: #8a2020;        box-shadow: 0 0 8px 2px rgba(160, 40, 40, 0.35);   transform: scale(0.97); }
+  60%  { border-color: #5a1818;        box-shadow: 0 0 3px 1px rgba(160, 40, 40, 0.15);   transform: scale(0.99); }
+  100% { border-color: ${BORDER_SLOT}; box-shadow: none;                                     transform: scale(1);    }
+`;
+
 const ROW_MS = 50;
 
 export const Panel = styled.div`
@@ -89,7 +103,16 @@ export const SlotGrid = styled.div`
   }
 `;
 
-export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated: boolean; $mobileOrder: number }>`
+export const SlotCell = styled.div<{
+  $reversed: boolean;
+  $row: number;
+  $animated: boolean;
+  $mobileOrder: number;
+  $justEquipped: boolean;
+  $equipDelay: number;
+  $justUnequipped: boolean;
+  $unequipDelay: number;
+}>`
   position: relative;
   display: flex;
   flex-direction: ${({ $reversed }) => ($reversed ? "row-reverse" : "row")};
@@ -113,6 +136,20 @@ export const SlotCell = styled.div<{ $reversed: boolean; $row: number; $animated
       : css`
           opacity: 1;
         `}
+  ${({ $justEquipped, $equipDelay }) =>
+    $justEquipped &&
+    css`
+      animation: ${equipGlow} 0.42s ease both;
+      animation-delay: ${$equipDelay}ms;
+      z-index: 1;
+    `}
+  ${({ $justUnequipped, $unequipDelay }) =>
+    $justUnequipped &&
+    css`
+      animation: ${unequipPulse} 0.38s ease both;
+      animation-delay: ${$unequipDelay}ms;
+      z-index: 1;
+    `}
 
   &:focus-visible {
     outline: 2px solid ${BORDER_HOVER};

@@ -67,9 +67,10 @@ function getSlotOptions(item: GearResult): SlotOption[] | null {
 
 interface GearSearchProps {
   onEquip: (item: GearResult, slot?: string) => void;
+  flashedItem?: string | null;
 }
 
-const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
+const GearSearch: React.FC<GearSearchProps> = ({ onEquip, flashedItem }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GearResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -165,6 +166,7 @@ const GearSearch: React.FC<GearSearchProps> = ({ onEquip }) => {
                   <ResultCard
                     as={clickable ? "button" : "div"}
                     $clickable={clickable}
+                    $flashed={item.name === flashedItem}
                     onClick={clickable ? () => onEquip(item) : undefined}
                   >
                     <CardRow>
