@@ -12,6 +12,9 @@ export default defineConfig({
   // "local" profile (LocalSecurityConfig), so no auth header is needed here.
   server: {
     proxy: {
+      // Order matters: the more specific /api/cars prefix (matchbox service)
+      // must be declared before the general /api rule (timewalkers service).
+      "/api/cars": "http://localhost:8081",
       "/api": "http://localhost:8080",
     },
   },

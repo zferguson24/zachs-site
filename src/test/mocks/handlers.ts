@@ -7,6 +7,7 @@ import {
   searchResults,
   emptySearchResults,
 } from "./fixtures";
+import { carFilters, carMatchResponse } from "./carFixtures";
 
 export const handlers = [
   http.get("/api/characters/:name", ({ params }) => {
@@ -39,6 +40,14 @@ export const handlers = [
 
   http.delete("/api/characters/:name/gear", () => {
     return HttpResponse.json(baseCharacter);
+  }),
+
+  http.get("/api/cars/filters", () => {
+    return HttpResponse.json(carFilters);
+  }),
+
+  http.post("/api/cars/match", () => {
+    return HttpResponse.json(carMatchResponse);
   }),
 
   http.get("/api/gear/search", ({ request }) => {

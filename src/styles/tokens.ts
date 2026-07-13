@@ -42,3 +42,7 @@ export const TEXT_ERROR = "#e07070";
 export const TEXT_ACCENT = "#a0d0f0"; // primary action button label
 export const TEXT_MUTED_ACTION = "#a0c0d8"; // cancel / slot button label
 export const TEXT_NAV = "#c8ddf0"; // landing nav button
+
+// Winner marking (Matchbox car matcher) — reserved exclusively for rank-1 results
+export const GOLD = "#d8b455";
+export const GOLD_BRIGHT = "#f4dfa0";
