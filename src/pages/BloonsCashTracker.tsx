@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import alternativeIcon from "../assets/Btd6Images/alternative.webp";
+import chimpsIcon from "../assets/Btd6Images/chimps.webp";
 import doubleCashIcon from "../assets/Btd6Images/doubleCash.webp";
 import easyIcon from "../assets/Btd6Images/easy.webp";
+import halfCashIcon from "../assets/Btd6Images/halfCash.webp";
 import hardIcon from "../assets/Btd6Images/hard.webp";
 import impoppableIcon from "../assets/Btd6Images/impoppable.png";
 import knowledgeIcon from "../assets/Btd6Images/knowledge.webp";
@@ -9,6 +12,7 @@ import moneyIcon from "../assets/Btd6Images/money.webp";
 import {
   Btd6Difficulty,
   BTD6_DIFFICULTIES,
+  CASH_MODIFIERS_DISABLED_FOR,
   DIFFICULTY_ROUND_BOUNDS,
   MORE_CASH_KNOWLEDGE_BONUS,
 } from "../constants/btd6";
@@ -46,19 +50,33 @@ const DIFFICULTY_ICONS: Record<Btd6Difficulty, string> = {
   Medium: mediumIcon,
   Hard: hardIcon,
   Impoppable: impoppableIcon,
+  CHIMPS: chimpsIcon,
+  Alternative: alternativeIcon,
+  "Half Cash": halfCashIcon,
 };
 
 const BloonsCashTracker: React.FC = () => {
   const [difficulty, setDifficulty] = useState<Btd6Difficulty>("Easy");
   const [round, setRound] = useState(DIFFICULTY_ROUND_BOUNDS.Easy.start);
-  const [moreCashKnowledge, setMoreCashKnowledge] = useState(false);
+  // Defaults to checked - More Cash is a one-time, permanent Monkey Knowledge unlock, so most
+  // players who've bothered with knowledge at all already have it active in every game.
+  const [moreCashKnowledge, setMoreCashKnowledge] = useState(true);
   const [doubleCash, setDoubleCash] = useState(false);
 
   const { start, end } = DIFFICULTY_ROUND_BOUNDS[difficulty];
+  const modifiersDisabled = CASH_MODIFIERS_DISABLED_FOR.includes(difficulty);
 
   const handleDifficultyChange = (value: Btd6Difficulty) => {
     setDifficulty(value);
     setRound(DIFFICULTY_ROUND_BOUNDS[value].start);
+    if (CASH_MODIFIERS_DISABLED_FOR.includes(value)) {
+      setMoreCashKnowledge(false);
+      setDoubleCash(false);
+    } else if (CASH_MODIFIERS_DISABLED_FOR.includes(difficulty)) {
+      // Leaving CHIMPS for a mode that allows knowledge again - restore the default, since
+      // More Cash is a permanent unlock rather than something toggled per game.
+      setMoreCashKnowledge(true);
+    }
   };
 
   const handleRoundChange = (value: string) => {
@@ -88,13 +106,14 @@ const BloonsCashTracker: React.FC = () => {
       <ContentArea>
         <Panel>
           <FormField>
-            <FormLabel>Difficulty</FormLabel>
-            <DifficultyRow>
+            <FormLabel id="btd6-difficulty-label">Difficulty</FormLabel>
+            <DifficultyRow role="group" aria-labelledby="btd6-difficulty-label">
               {BTD6_DIFFICULTIES.map((d) => (
                 <DifficultyButton
                   key={d}
                   type="button"
                   $active={d === difficulty}
+                  aria-pressed={d === difficulty}
                   onClick={() => handleDifficultyChange(d)}
                 >
                   <DifficultyIcon src={DIFFICULTY_ICONS[d]} alt="" />
@@ -113,35 +132,45 @@ const BloonsCashTracker: React.FC = () => {
                 min={start}
                 max={end}
                 value={round}
+                aria-describedby="btd6-round-hint"
                 onChange={(e) => handleRoundChange(e.target.value)}
               />
-              <RangeHint>
+              <RangeHint id="btd6-round-hint">
                 Rounds {start}-{end} on {difficulty}
               </RangeHint>
             </FormField>
           </FormRow>
 
           <ToggleRow>
-            <ToggleLabel htmlFor="btd6-more-cash">
+            <ToggleLabel htmlFor="btd6-more-cash" $disabled={modifiersDisabled}>
               <ToggleInput
                 id="btd6-more-cash"
                 type="checkbox"
                 checked={moreCashKnowledge}
+                disabled={modifiersDisabled}
+                aria-describedby={modifiersDisabled ? "btd6-modifiers-disabled-hint" : undefined}
                 onChange={(e) => setMoreCashKnowledge(e.target.checked)}
               />
               <ToggleIcon src={knowledgeIcon} alt="" />
               More Cash knowledge (+${MORE_CASH_KNOWLEDGE_BONUS} starting cash)
             </ToggleLabel>
-            <ToggleLabel htmlFor="btd6-double-cash">
+            <ToggleLabel htmlFor="btd6-double-cash" $disabled={modifiersDisabled}>
               <ToggleInput
                 id="btd6-double-cash"
                 type="checkbox"
                 checked={doubleCash}
+                disabled={modifiersDisabled}
+                aria-describedby={modifiersDisabled ? "btd6-modifiers-disabled-hint" : undefined}
                 onChange={(e) => setDoubleCash(e.target.checked)}
               />
               <ToggleIcon src={doubleCashIcon} alt="" />
               Double Cash mode
             </ToggleLabel>
+            {modifiersDisabled && (
+              <RangeHint id="btd6-modifiers-disabled-hint">
+                CHIMPS disables Monkey Knowledge and Double Cash.
+              </RangeHint>
+            )}
           </ToggleRow>
         </Panel>
 
@@ -175,10 +204,14 @@ const BloonsCashTracker: React.FC = () => {
           ,{" "}
           <a href="https://bloons.fandom.com/wiki/More_Cash" target="_blank" rel="noreferrer">
             More Cash
-          </a>{" "}
-          &{" "}
+          </a>
+          ,{" "}
           <a href="https://bloons.fandom.com/wiki/Double_Cash" target="_blank" rel="noreferrer">
             Double Cash
+          </a>{" "}
+          &{" "}
+          <a href="https://bloons.fandom.com/wiki/Half_Cash" target="_blank" rel="noreferrer">
+            Half Cash
           </a>{" "}
           (Bloons Wiki).
         </Note>

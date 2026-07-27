@@ -21,6 +21,10 @@ import {
 
 export { Page } from "../styles/shared";
 
+// Page-local breakpoint: the 7-tile difficulty row starts cramping well before the site's
+// shared mobile breakpoint kicks in and stacks it, so it gets one intermediate size step down.
+const BREAKPOINT_COMPACT = "1000px";
+
 export const PageTitle = styled.h1`
   font-size: ${FONT_2XL};
   line-height: 30px;
@@ -41,7 +45,7 @@ export const PageSubtitle = styled.p`
 
 export const ContentArea = styled.div`
   width: 100%;
-  max-width: 720px;
+  max-width: 1280px;
 `;
 
 export const Panel = styled.div`
@@ -115,21 +119,28 @@ export const RangeHint = styled.div`
 export const DifficultyRow = styled.div`
   display: flex;
   gap: 12px;
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex-direction: column;
+  }
 `;
 
 export const DifficultyButton = styled.button<{ $active: boolean }>`
   flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 14px 10px;
+  gap: 10px;
+  padding: 16px 8px;
   background-color: ${({ $active }) => ($active ? BG_HOVER : BG_BASE)};
   border: 2px solid ${({ $active }) => ($active ? BORDER_ACCENT : BORDER)};
   border-radius: ${RADIUS_MD};
   color: ${({ $active }) => ($active ? TEXT_BRIGHT : TEXT_SECONDARY)};
-  font-size: ${FONT_XS};
+  font-size: ${FONT_SM};
   font-weight: 600;
+  text-align: center;
   cursor: pointer;
   transition:
     border-color 0.15s,
@@ -140,11 +151,32 @@ export const DifficultyButton = styled.button<{ $active: boolean }>`
     border-color: ${BORDER_HOVER};
     background-color: ${BG_HOVER};
   }
+
+  &:focus-visible {
+    outline: 2px solid ${BORDER_HOVER};
+    outline-offset: 2px;
+  }
+
+  @media (max-width: ${BREAKPOINT_COMPACT}) {
+    gap: 6px;
+    padding: 10px 4px;
+    font-size: ${FONT_XS};
+  }
+
+  @media (max-width: ${BREAKPOINT_MOBILE}) {
+    flex: none;
+    width: 100%;
+  }
 `;
 
 export const DifficultyIcon = styled.img`
-  width: 56px;
-  height: 56px;
+  height: 88px;
+  width: auto;
+  max-width: 100%;
+
+  @media (max-width: ${BREAKPOINT_COMPACT}) {
+    height: 48px;
+  }
 `;
 
 export const ToggleRow = styled.div`
@@ -153,14 +185,14 @@ export const ToggleRow = styled.div`
   gap: 14px;
 `;
 
-export const ToggleLabel = styled.label`
+export const ToggleLabel = styled.label<{ $disabled?: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: ${FONT_SM};
   line-height: ${FONT_MD};
-  color: ${TEXT_PRIMARY};
-  cursor: pointer;
+  color: ${({ $disabled }) => ($disabled ? TEXT_DIM : TEXT_PRIMARY)};
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
 `;
 
 export const ToggleInput = styled.input`
@@ -171,6 +203,11 @@ export const ToggleInput = styled.input`
   border-radius: 3px;
   accent-color: ${BORDER_ACCENT};
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 export const ToggleIcon = styled.img`

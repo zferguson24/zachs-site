@@ -10,8 +10,11 @@ export interface Btd6CashOptions {
   doubleCash?: boolean;
 }
 
-function startingCash(options: Btd6CashOptions): number {
-  const base = 650 + (options.moreCashKnowledge ? MORE_CASH_KNOWLEDGE_BONUS : 0);
+// Starting cash for this mode (Half Cash already bakes its own 0.5x into round 0 of the
+// table, e.g. $325 instead of $650), plus the flat More Cash knowledge bonus, doubled by
+// Double Cash if active.
+function startingCash(difficulty: Btd6Difficulty, options: Btd6CashOptions): number {
+  const base = CUMULATIVE_CASH_BY_ROUND[difficulty][0] + (options.moreCashKnowledge ? MORE_CASH_KNOWLEDGE_BONUS : 0);
   return options.doubleCash ? base * 2 : base;
 }
 
@@ -23,24 +26,17 @@ function baseRoundIncome(difficulty: Btd6Difficulty, round: number): number {
   return table[round] - table[previous];
 }
 
-// Double Cash doubles cash earned from popping bloons, but not the flat $(100+round)
-// round-completion bonus - see the "BTD6" effects section of
-// https://bloons.fandom.com/wiki/Double_Cash. Pop income for a round is backed out of the
-// scraped total via that same completion-bonus formula.
-function effectiveRoundIncome(difficulty: Btd6Difficulty, round: number, doubleCash: boolean): number {
-  const income = baseRoundIncome(difficulty, round);
-  if (!doubleCash) {return income;}
-
-  const completionBonus = 100 + round;
-  const popIncome = income - completionBonus;
-  return popIncome * 2 + completionBonus;
-}
-
+// Double Cash doubles starting cash, per-pop income, and the round-completion bonus alike -
+// cross-referencing the Half Cash article confirms this: Half Cash's own $0.5x applies
+// uniformly to all three, and it's described as fully cancelling Double Cash when both are
+// active, which only works if Double Cash is also uniform. See
+// https://bloons.fandom.com/wiki/Half_Cash and https://bloons.fandom.com/wiki/Double_Cash.
 function cumulativeThroughRound(difficulty: Btd6Difficulty, round: number, options: Btd6CashOptions): number {
   const { start } = DIFFICULTY_ROUND_BOUNDS[difficulty];
-  let total = startingCash(options);
+  const multiplier = options.doubleCash ? 2 : 1;
+  let total = startingCash(difficulty, options);
   for (let r = start; r <= round; r++) {
-    total += effectiveRoundIncome(difficulty, r, options.doubleCash ?? false);
+    total += baseRoundIncome(difficulty, r) * multiplier;
   }
   return total;
 }
@@ -49,7 +45,7 @@ function cumulativeThroughRound(difficulty: Btd6Difficulty, round: number, optio
 // every prior round (skipped rounds on Hard/Impoppable contribute nothing).
 export function cashAtStartOfRound(difficulty: Btd6Difficulty, round: number, options: Btd6CashOptions = {}): number {
   const { start } = DIFFICULTY_ROUND_BOUNDS[difficulty];
-  return round <= start ? startingCash(options) : cumulativeThroughRound(difficulty, round - 1, options);
+  return round <= start ? startingCash(difficulty, options) : cumulativeThroughRound(difficulty, round - 1, options);
 }
 
 // Cash still spendable (pops + round-completion bonuses, no farms) between the start of
