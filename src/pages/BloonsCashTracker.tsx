@@ -16,7 +16,12 @@ import {
   DIFFICULTY_ROUND_BOUNDS,
   MORE_CASH_KNOWLEDGE_BONUS,
 } from "../constants/btd6";
-import { cashAtStartOfRound, cashRemainingAfterRound, finalRoundUnspendableIncome } from "../utils/btd6Cash";
+import {
+  cashAtStartOfRound,
+  cashRemainingAfterRound,
+  finalRoundUnspendableIncome,
+  incomeFromRound,
+} from "../utils/btd6Cash";
 import { formatCurrency } from "../utils/format";
 import {
   Page,
@@ -94,6 +99,7 @@ const BloonsCashTracker: React.FC = () => {
   const earned = cashAtStartOfRound(difficulty, round, options);
   const remaining = cashRemainingAfterRound(difficulty, round, options);
   const finalRoundIncome = finalRoundUnspendableIncome(difficulty, options);
+  const nextRoundIncome = incomeFromRound(difficulty, round, options);
 
   return (
     <Page>
@@ -181,6 +187,9 @@ const BloonsCashTracker: React.FC = () => {
               <ResultIcon src={moneyIcon} alt="" />
               {formatCurrency(earned)}
             </ResultValue>
+            <ResultFootnote>
+              <strong>+ {formatCurrency(nextRoundIncome)}</strong> when Round {round} ends.
+            </ResultFootnote>
           </ResultCard>
           <ResultCard>
             <ResultLabel>
@@ -191,7 +200,7 @@ const BloonsCashTracker: React.FC = () => {
               {formatCurrency(remaining)}
             </ResultValue>
             <ResultFootnote>
-              + {formatCurrency(finalRoundIncome)} more earned finishing Round {end}.
+              <strong>+ {formatCurrency(finalRoundIncome)}</strong> more earned finishing Round {end}.
             </ResultFootnote>
           </ResultCard>
         </ResultsGrid>

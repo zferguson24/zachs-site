@@ -3,6 +3,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BloonsCashTracker from "./BloonsCashTracker";
 
+// The footnote amounts are wrapped in <strong>, splitting the sentence across nodes - a plain
+// getByText string only matches a single text node, so match on the containing element's full
+// textContent instead.
+function byFullText(text: string) {
+  return (_: string, element: Element | null) => element?.textContent === text;
+}
+
 describe("BloonsCashTracker", () => {
   it("defaults to Easy, round 1, with More Cash knowledge already checked", () => {
     render(<BloonsCashTracker />);
@@ -13,9 +20,10 @@ describe("BloonsCashTracker", () => {
     expect(screen.getByLabelText("Double Cash mode")).not.toBeChecked();
     expect(screen.getByText("Earned by start of Round 1")).toBeInTheDocument();
     expect(screen.getByText("$850")).toBeInTheDocument(); // $650 base + the $200 knowledge bonus
+    expect(screen.getByText(byFullText("+ $121 when Round 1 ends."))).toBeInTheDocument();
     expect(screen.getByText("Left to spend, Rounds 1-40")).toBeInTheDocument();
     expect(screen.getByText("$16,335")).toBeInTheDocument(); // unaffected - a flat bonus cancels out of "how much more"
-    expect(screen.getByText("+ $521 more earned finishing Round 40.")).toBeInTheDocument();
+    expect(screen.getByText(byFullText("+ $521 more earned finishing Round 40."))).toBeInTheDocument();
   });
 
   it("switches difficulty, resetting the round to that mode's starting round", async () => {
@@ -37,6 +45,7 @@ describe("BloonsCashTracker", () => {
 
     expect(screen.getByText("Earned by start of Round 10")).toBeInTheDocument();
     expect(screen.getByText("$2,329")).toBeInTheDocument(); // cumulative cash through round 9 on Easy, +$200 knowledge
+    expect(screen.getByText(byFullText("+ $314 when Round 10 ends."))).toBeInTheDocument();
   });
 
   it("clamps a round number typed above the difficulty's final round", () => {
@@ -64,6 +73,24 @@ describe("BloonsCashTracker", () => {
     await user.click(screen.getByLabelText("Double Cash mode"));
 
     expect(screen.getByText("$1,700")).toBeInTheDocument(); // (650 + 200 knowledge) x 2
+  });
+
+  it("doubles the upcoming round's income too under Double Cash", async () => {
+    const user = userEvent.setup();
+    render(<BloonsCashTracker />);
+
+    await user.click(screen.getByLabelText("Double Cash mode"));
+
+    expect(screen.getByText(byFullText("+ $242 when Round 1 ends."))).toBeInTheDocument(); // $121 x 2
+  });
+
+  it("shows the same figure as the final-round footnote once the final round is selected", () => {
+    render(<BloonsCashTracker />);
+
+    fireEvent.change(screen.getByLabelText("Round"), { target: { value: "40" } });
+
+    expect(screen.getByText(byFullText("+ $521 when Round 40 ends."))).toBeInTheDocument();
+    expect(screen.getByText(byFullText("+ $521 more earned finishing Round 40."))).toBeInTheDocument();
   });
 
   it("disables and unchecks both cash modifiers when CHIMPS is selected", async () => {

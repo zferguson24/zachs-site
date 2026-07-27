@@ -265,6 +265,10 @@ export const ResultFootnote = styled.div`
   font-size: ${FONT_XS};
   line-height: ${FONT_SM};
   color: ${TEXT_DIM};
+
+  strong {
+    color: ${TEXT_BRIGHT};
+  }
 `;
 
 export const Note = styled.p`

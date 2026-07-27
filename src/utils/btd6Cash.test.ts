@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cashAtStartOfRound, cashRemainingAfterRound, finalRoundUnspendableIncome } from "./btd6Cash";
+import { cashAtStartOfRound, cashRemainingAfterRound, finalRoundUnspendableIncome, incomeFromRound } from "./btd6Cash";
 import { CUMULATIVE_CASH_BY_ROUND } from "../constants/btd6";
 
 describe("cashAtStartOfRound", () => {
@@ -51,6 +51,26 @@ describe("cashRemainingAfterRound", () => {
     const early = cashRemainingAfterRound("Medium", 1);
     const later = cashRemainingAfterRound("Medium", 30);
     expect(later).toBeLessThan(early);
+  });
+});
+
+describe("incomeFromRound", () => {
+  it("matches the per-round delta in the scraped table", () => {
+    const { Easy } = CUMULATIVE_CASH_BY_ROUND;
+    expect(incomeFromRound("Easy", 1)).toBe(Easy[1] - Easy[0]);
+    expect(incomeFromRound("Easy", 10)).toBe(Easy[10] - Easy[9]);
+  });
+
+  it("is unaffected by the flat More Cash knowledge bonus", () => {
+    expect(incomeFromRound("Easy", 1)).toBe(incomeFromRound("Easy", 1, { moreCashKnowledge: true }));
+  });
+
+  it("is doubled by Double Cash", () => {
+    expect(incomeFromRound("Easy", 1, { doubleCash: true })).toBe(incomeFromRound("Easy", 1) * 2);
+  });
+
+  it("equals finalRoundUnspendableIncome at the difficulty's last round", () => {
+    expect(incomeFromRound("Easy", 40)).toBe(finalRoundUnspendableIncome("Easy"));
   });
 });
 

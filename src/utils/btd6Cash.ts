@@ -61,9 +61,20 @@ export function cashRemainingAfterRound(
   return cumulativeThroughRound(difficulty, end - 1, options) - cashAtStartOfRound(difficulty, round, options);
 }
 
+// Cash earned by finishing `round` itself - pops plus that round's completion bonus, with
+// modifiers applied. This is what gets added to the total the moment the round ends.
+export function incomeFromRound(difficulty: Btd6Difficulty, round: number, options: Btd6CashOptions = {}): number {
+  const { start } = DIFFICULTY_ROUND_BOUNDS[difficulty];
+  const clampedRound = Math.max(round, start);
+  return (
+    cumulativeThroughRound(difficulty, clampedRound, options) -
+    cumulativeThroughRound(difficulty, clampedRound - 1, options)
+  );
+}
+
 // The cash reward for finishing the difficulty's final round - earned the instant the game
 // ends, so it's never actually spendable on a tower or upgrade.
 export function finalRoundUnspendableIncome(difficulty: Btd6Difficulty, options: Btd6CashOptions = {}): number {
   const { end } = DIFFICULTY_ROUND_BOUNDS[difficulty];
-  return cumulativeThroughRound(difficulty, end, options) - cumulativeThroughRound(difficulty, end - 1, options);
+  return incomeFromRound(difficulty, end, options);
 }
