@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import BloonsCashTracker from "./pages/BloonsCashTracker";
 import CarSelection from "./pages/CarSelection";
 import CharacterList from "./pages/CharacterList";
 import Landing from "./pages/Landing";
@@ -23,6 +24,7 @@ function App() {
                 <Route path={ROUTES.TIMEWALKING} element={<Navigate to={ROUTES.TIMEWALKING_CHARACTERS} replace />} />
                 <Route path={ROUTES.TIMEWALKING_CHARACTERS} element={<CharacterList />} />
                 <Route path={ROUTES.TIMEWALKING_GEAR} element={<TimewalkingGearSelection />} />
+                <Route path={ROUTES.BLOONS_CASH_TRACKER} element={<BloonsCashTracker />} />
               </Routes>
             </div>
           </div>

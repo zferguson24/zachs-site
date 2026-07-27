@@ -4,4 +4,5 @@ export const ROUTES = {
   TIMEWALKING: "/timewalking",
   TIMEWALKING_CHARACTERS: "/timewalking/characters",
   TIMEWALKING_GEAR: "/timewalking/gear",
+  BLOONS_CASH_TRACKER: "/bloons-cash-tracker",
 } as const;
