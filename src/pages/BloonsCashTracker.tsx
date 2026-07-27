@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import doubleCashIcon from "../assets/Btd6Images/doubleCash.webp";
+import easyIcon from "../assets/Btd6Images/easy.webp";
+import hardIcon from "../assets/Btd6Images/hard.webp";
+import impoppableIcon from "../assets/Btd6Images/impoppable.png";
+import knowledgeIcon from "../assets/Btd6Images/knowledge.webp";
+import mediumIcon from "../assets/Btd6Images/medium.webp";
+import moneyIcon from "../assets/Btd6Images/money.webp";
 import {
   Btd6Difficulty,
   BTD6_DIFFICULTIES,
@@ -16,19 +23,30 @@ import {
   FormRow,
   FormField,
   FormLabel,
-  FormSelect,
   FormInput,
   RangeHint,
+  DifficultyRow,
+  DifficultyButton,
+  DifficultyIcon,
   ToggleRow,
   ToggleLabel,
   ToggleInput,
+  ToggleIcon,
   ResultsGrid,
   ResultCard,
   ResultLabel,
   ResultValue,
+  ResultIcon,
   ResultFootnote,
   Note,
 } from "./BloonsCashTracker.styles";
+
+const DIFFICULTY_ICONS: Record<Btd6Difficulty, string> = {
+  Easy: easyIcon,
+  Medium: mediumIcon,
+  Hard: hardIcon,
+  Impoppable: impoppableIcon,
+};
 
 const BloonsCashTracker: React.FC = () => {
   const [difficulty, setDifficulty] = useState<Btd6Difficulty>("Easy");
@@ -69,21 +87,24 @@ const BloonsCashTracker: React.FC = () => {
 
       <ContentArea>
         <Panel>
+          <FormField>
+            <FormLabel>Difficulty</FormLabel>
+            <DifficultyRow>
+              {BTD6_DIFFICULTIES.map((d) => (
+                <DifficultyButton
+                  key={d}
+                  type="button"
+                  $active={d === difficulty}
+                  onClick={() => handleDifficultyChange(d)}
+                >
+                  <DifficultyIcon src={DIFFICULTY_ICONS[d]} alt="" />
+                  {d}
+                </DifficultyButton>
+              ))}
+            </DifficultyRow>
+          </FormField>
+
           <FormRow>
-            <FormField>
-              <FormLabel htmlFor="btd6-difficulty">Difficulty</FormLabel>
-              <FormSelect
-                id="btd6-difficulty"
-                value={difficulty}
-                onChange={(e) => handleDifficultyChange(e.target.value as Btd6Difficulty)}
-              >
-                {BTD6_DIFFICULTIES.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </FormSelect>
-            </FormField>
             <FormField>
               <FormLabel htmlFor="btd6-round">Round</FormLabel>
               <FormInput
@@ -108,6 +129,7 @@ const BloonsCashTracker: React.FC = () => {
                 checked={moreCashKnowledge}
                 onChange={(e) => setMoreCashKnowledge(e.target.checked)}
               />
+              <ToggleIcon src={knowledgeIcon} alt="" />
               More Cash knowledge (+${MORE_CASH_KNOWLEDGE_BONUS} starting cash)
             </ToggleLabel>
             <ToggleLabel htmlFor="btd6-double-cash">
@@ -117,6 +139,7 @@ const BloonsCashTracker: React.FC = () => {
                 checked={doubleCash}
                 onChange={(e) => setDoubleCash(e.target.checked)}
               />
+              <ToggleIcon src={doubleCashIcon} alt="" />
               Double Cash mode
             </ToggleLabel>
           </ToggleRow>
@@ -125,13 +148,19 @@ const BloonsCashTracker: React.FC = () => {
         <ResultsGrid>
           <ResultCard>
             <ResultLabel>Earned by start of Round {round}</ResultLabel>
-            <ResultValue>{formatCurrency(earned)}</ResultValue>
+            <ResultValue>
+              <ResultIcon src={moneyIcon} alt="" />
+              {formatCurrency(earned)}
+            </ResultValue>
           </ResultCard>
           <ResultCard>
             <ResultLabel>
               Left to spend, Rounds {round}-{end}
             </ResultLabel>
-            <ResultValue>{formatCurrency(remaining)}</ResultValue>
+            <ResultValue>
+              <ResultIcon src={moneyIcon} alt="" />
+              {formatCurrency(remaining)}
+            </ResultValue>
             <ResultFootnote>
               + {formatCurrency(finalRoundIncome)} more earned finishing Round {end}.
             </ResultFootnote>
