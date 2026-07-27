@@ -11,6 +11,7 @@ const Landing: React.FC = () => {
       <ButtonSection>
         <NavButton onClick={() => navigate(ROUTES.CAR_SELECTION)}>Car Selection ⟶</NavButton>
         <NavButton onClick={() => navigate(ROUTES.TIMEWALKING)}>Timewalking Gear Selection ⟶</NavButton>
+        <NavButton onClick={() => navigate(ROUTES.BLOONS_CASH_TRACKER)}>Bloons Cash Tracker ⟶</NavButton>
       </ButtonSection>
     </Page>
   );
