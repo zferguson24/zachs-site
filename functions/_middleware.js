@@ -163,5 +163,15 @@ export async function onRequest(context) {
     );
   }
 
-  return next();
+  // Edge cache keys on URL only, not the session cookie — without this, a response
+  // cached from an authenticated visit could be served straight through to a later
+  // unauthenticated one, bypassing this gate on a plain (non-reload) navigation.
+  const response = await next();
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'private, no-store');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
